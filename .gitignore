@@ -2,6 +2,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
+result/
+saved/logs
+saved/logs/adata/data
+saved/logs
+saved/models
 
 # C extensions
 *.so
