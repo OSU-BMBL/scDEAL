@@ -1,8 +1,8 @@
 # scDEAL documentation
 Deep Transfer Learning of Drug Sensitivity by Integrating Bulk and Single-cell RNA-seq data
 
-## Libiries to run to model
-Following envrionment or packages are required to run the program:
+## Libraries to run to model
+Following environment or packages are required to run the program:
 
 - python 3.7.3
 - torch 1.3.0
@@ -56,32 +56,32 @@ scDEAL
 
 ## Usage
 Two main scripts to run the program are bulkmodel.py and scmodel.py
-Run bulkmode.py first using the python commond line to train the source model.
+Run bulkmode.py first using the python command line to train the source model.
 
-For examples, run bulkmode.py with user defined prarmaters:
+For example, run bulkmode.py with user-defined parameters:
 
 ```
 python bulkmodel.py --drug I-BET-762 -e saved/models/bulk_encoder_ae_256.pkl -p saved/models/bulk_predictor_  --dimreduce AE --encoder_h_dims "256,256" --predictor_h_dims "128,64" --bottleneck 256 
 
 ```
 
-This step takes expression profile of bulk RNA-Seq, and the drug response annatation as input. Iw will train a drug sensitivity predictor for the drug 'I-BET-762.' The output model will be stroed in the directory "saved/models." The prefix of the model's file name will be 'bulk_predictor_ae_' and its full name will be dependent to paramters that users insert. In this case. The file name of the bulk model will be "bulk_predictor_AEI-BET-762.pkl". For all avaliable drug names, please refer to the columns names of files: GDSC*_label_*drugs_binary.csv.
+This step takes the expression profile of bulk RNA-Seq and the drug response annotations as input. Iw will train a drug sensitivity predictor for the drug 'I-BET-762.' The output model will be stored in the directory "saved/models." The prefix of the model's file name will be 'bulk_predictor_ae_' and its full name will be dependent on parameters that users insert. In this case. The file name of the bulk model will be "bulk_predictor_AEI-BET-762.pkl". For all available drug names, please refer to the columns names of files: GDSC*_label_*drugs_binary.csv.
 
-For A built-in testing case of acute myeloid leukaemia cells [Bell et al.](https://doi.org/10.1038/s41467-019-10652-9) accessed from Gene Expression Omnibus (GEO) accession [GSE110894](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE110894) we can run: 
+For A built-in testing case of acute myeloid leukemia cells [Bell et al.](https://doi.org/10.1038/s41467-019-10652-9) accessed from Gene Expression Omnibus (GEO) accession [GSE110894](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE110894) we can run: 
 
 
 ```
 python scmodel.py --sc_data GSE110894 --pretrain saved/models/sc_encoder_ae.pkl -s saved/models/bulk_predictor_AEI-BET-762.pkl --dimreduce AE --sc_model_path saved/models/sc_predictor --drug I-BET-762  --bulk_h_dims "256,256" --bottleneck 256 --predictor_h_dims "128,64"
 ```
-This step train the scDEAL model and generated predict the sensitivity of I-BET-762 of the input scRNA-Seq data from GSE110984. Remember that the dimention of the encoder and predictor should be identical (--bulk_h_dims "256,256" --bottleneck 256) in two steps. For you own input count matrix, you can replace the --sc_data option by your data path as follows:
+This step trains the scDEAL model and generated predict the sensitivity of I-BET-762 of the input scRNA-Seq data from GSE110984. Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,256" --bottleneck 256) in two steps. For your input count matrix, you can replace the --sc_data option with your data path as follows:
 
 ```
 python scmodel.py --sc_data [*Your own data path*] ...
 ```
 
-The output format of scDEAL are the [AnnData](https://anndata.readthedocs.io/en/latest/anndata.AnnData.html) object (.h5ad) applied by the scanpy package. The file will be stroed in the directory "saved\adata\data\". The prediction of sensitivity will be stored in adata.obs["sens_label"] (if you load your AnnDdata object named as adata) where 0 represents resistant and 1 represents sensitivty respectively.
+The output format of scDEAL is the [AnnData](https://anndata.readthedocs.io/en/latest/anndata.AnnData.html) object (.h5ad) applied by the scanpy package. The file will be stored in the directory "saved\adata\data\". The prediction of sensitivity will be stored in adata.obs["sens_label"] (if you load your AnnDdata object named as adata) where 0 represents resistance and 1 represents sensitivity respectively.
 
-For more detailed settings of two scripts, pleas refer to the documentation section.
+For more detailed settings of the two scripts, please refer to the documentation section.
 
 ## Documentation
 
