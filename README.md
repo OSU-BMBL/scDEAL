@@ -65,7 +65,7 @@ python bulkmodel.py --drug I-BET-762 -e saved/models/bulk_encoder_ae_256.pkl -p 
 
 ```
 
-This step takes expression profile of bulk RNA-Seq, and the drug response annatation as input. Iw will train a drug sensitivity predictor for the drug 'I-BET-762.' The output model will be stroed in the directory "saved/models." The prefix of the model's file name will be 'bulk_predictor_ae_' and its full name will be dependent to paramters that users insert. In this case. The file name of the bulk model will be "bulk_predictor_AEI-BET-762.pkl". 
+This step takes expression profile of bulk RNA-Seq, and the drug response annatation as input. Iw will train a drug sensitivity predictor for the drug 'I-BET-762.' The output model will be stroed in the directory "saved/models." The prefix of the model's file name will be 'bulk_predictor_ae_' and its full name will be dependent to paramters that users insert. In this case. The file name of the bulk model will be "bulk_predictor_AEI-BET-762.pkl". For all avaliable drug names, please refer to the columns names of files: GDSC*_label_*drugs_binary.csv.
 
 For A built-in testing case of acute myeloid leukaemia cells [Bell et al.](https://doi.org/10.1038/s41467-019-10652-9) accessed from Gene Expression Omnibus (GEO) accession [GSE110894](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE110894) we can run: 
 
