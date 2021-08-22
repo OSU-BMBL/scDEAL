@@ -35,7 +35,11 @@ Installation time is depened on the network speed of user.
 
 ## Data preparation
 
-Please create two directories 'data' and 'data/GSE110894' and store the data download from the [data](https://bmbl.bmi.osumc.edu/downloadFiles/scdeal/) link inside. The organization of the directory should be similar as follows:
+Please create two directories 'data' and 'data/GSE110894' and store the data download from the [data](https://bmbl.bmi.osumc.edu/downloadFiles/scdeal/) link inside.:
+
+[https://bmbl.bmi.osumc.edu/downloadFiles/scdeal/](https://bmbl.bmi.osumc.edu/downloadFiles/scdeal/) 
+
+The organization of the directory should be similar as follows:
 
 ```
 scDEAL
