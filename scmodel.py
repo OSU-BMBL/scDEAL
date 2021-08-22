@@ -47,7 +47,6 @@ def run_main(args):
 
     t0 = time.time()
 
-    logging.info("Start at " + str(t0))
     epochs = args.epochs
     dim_au_out = args.bottleneck #8, 16, 32, 64, 128, 256,512
     na = args.missing_value
@@ -98,6 +97,8 @@ def run_main(args):
                     )
     logging.getLogger('matplotlib.font_manager').disabled = True
     logging.info(args)
+    logging.info("Start at " + str(t0))
+
     
     # Save arguments
     args_df = ut.save_arguments(args,now)
@@ -397,7 +398,7 @@ def run_main(args):
 
     t1 = time.time()
 
-    logging.info("End at " + str(t1)+", takes :", str(t1-t0) )
+    logging.info("End at " + str(t1)+", takes :" )
 
 
 if __name__ == '__main__':

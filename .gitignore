@@ -9,6 +9,7 @@ saved/logs
 saved/models
 saved/results
 saved/figures
+saved/adata
 data/
 # C extensions
 *.so

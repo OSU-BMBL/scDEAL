@@ -92,9 +92,9 @@ def run_main(args):
         # Rename columns if duplication exist
         data_r.columns = adata.var_names
         # Extract hvgs
-        data = data_r.loc[selected_idx,hvg]
+        data = data_r.loc[selected_idx.index,hvg]
     else:
-        data = data_r.loc[selected_idx,:]
+        data = data_r.loc[selected_idx.index,:]
 
     # Do PCA if PCA_dim!=0
     if PCA_dim !=0 :
@@ -266,7 +266,7 @@ if __name__ == '__main__':
     parser.add_argument('--data', type=str, default='data/GDSC2_expression.csv',help='Path of the bulk RNA-Seq expression profile')
     parser.add_argument('--label', type=str, default='data/GDSC2_label_9drugs_binary.csv',help='Path of the processed bulk RNA-Seq drug screening annotation')
     parser.add_argument('--result', type=str, default='saved/results/result_',help='Path of the training result report files')
-    parser.add_argument('--drug', type=str, default='Cisplatin',help='Name of the selected drug, should be a column name in the input file of --label')
+    parser.add_argument('--drug', type=str, default='I-BET-762',help='Name of the selected drug, should be a column name in the input file of --label')
     parser.add_argument('--missing_value', type=int, default=1,help='The value filled in the missing entry in the drug screening annotation, default: 1')
     parser.add_argument('--test_size', type=float, default=0.2,help='Size of the test set for the bulk model traning, default: 0.2')
     parser.add_argument('--valid_size', type=float, default=0.2,help='Size of the validation set for the bulk model traning, default: 0.2')
