@@ -103,7 +103,8 @@ def run_main(args):
         data = data
         
     # Extract labels
-    label = label_r.loc[selected_idx,select_drug]
+    label = label_r.loc[selected_idx.index,select_drug]
+    data_r = data_r.loc[selected_idx.index,:]
 
     # Scaling data
     mmscaler = preprocessing.MinMaxScaler()

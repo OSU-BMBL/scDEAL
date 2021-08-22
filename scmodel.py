@@ -44,6 +44,10 @@ DATA_MAP={
 def run_main(args):
 ################################################# START SECTION OF LOADING PARAMETERS #################################################
     # Read parameters
+
+    t0 = time.time()
+
+    logging.info("Start at " + str(t0))
     epochs = args.epochs
     dim_au_out = args.bottleneck #8, 16, 32, 64, 128, 256,512
     na = args.missing_value
@@ -211,8 +215,8 @@ def run_main(args):
 
     # Extract labels
     selected_idx = label_r.loc[:,select_drug]!=na
-    label = label_r.loc[selected_idx,select_drug]
-
+    label = label_r.loc[selected_idx.index,select_drug]
+    data_r = data_r.loc[selected_idx.index,:]
     label = label.values.reshape(-1,1)
 
 
@@ -390,6 +394,11 @@ def run_main(args):
     # Save adata
     adata.write("saved/adata/"+data_name+now+".h5ad")
 ################################################# END SECTION OF ANALYSIS FOR BULK DATA #################################################
+
+    t1 = time.time()
+
+    logging.info("End at " + str(t1)+", takes :", str(t1-t0) )
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
