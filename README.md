@@ -25,17 +25,20 @@ This software is developed and tested on the hardware envrionments of:
 No non-standard hardware are required for the software.
 
 ## Installation guide
-
+### Instructions
 The software is a stand alone python scirpt package. It can be download and installed with this github repository:
 
 ```
 git clone https://github.com/OSU-BMBL/scDEAL.git
 ```
-Installation time is depened on the network speed of user.
+
+### Typical install time
+Or download the .zip file form the repository/ acuire the .zip file then decompress .zip file.
+The download time depends on the network speed of user. No extra compile or installation time is required to run our main script. The installation time of dependencies is normally 1 minute per package.
 
 ## Data preparation
-
-Please create two directories 'data' and 'data/GSE110894' and store the data download from the [data](https://bmbl.bmi.osumc.edu/downloadFiles/scdeal/) link inside.:
+### Data download
+Please create a directory 'scDEAL/data/GSE110894' and store the data downloaded from the [data](https://bmbl.bmi.osumc.edu/downloadFiles/scdeal/) link inside.:
 
 [https://bmbl.bmi.osumc.edu/downloadFiles/scdeal/](https://bmbl.bmi.osumc.edu/downloadFiles/scdeal/) 
 
@@ -79,8 +82,7 @@ scDEAL
 │   │    ...
 ```
 
-## Directory contents
-
+### Directory contents
 Folders in our package will store the corresponding contents:
 
 - root: python scripts to run the program and README.md
@@ -92,7 +94,8 @@ Folders in our package will store the corresponding contents:
 - DaNN: python scripts describe the model.
 - scanpypip: python scripts of utilities.
 
-## Usage
+## Demo
+### Instructions to run on data
 Two main scripts to run the program are bulkmodel.py and scmodel.py
 Run bulkmode.py first using the python command line to train the source model.
 
@@ -111,17 +114,15 @@ For the transfer learning, we provide a built-in testing case of acute myeloid l
 ```
 python scmodel.py --sc_data GSE110894 --pretrain saved/models/sc_encoder_ae.pkl -s saved/models/bulk_predictor_AEI-BET-762.pkl --dimreduce AE --sc_model_path saved/models/sc_predictor --drug I-BET-762  --bulk_h_dims "256,256" --bottleneck 256 --predictor_h_dims "128,64"
 ```
-This step trains the scDEAL model and generated predict the sensitivity of I-BET-762 of the input scRNA-Seq data from GSE110984. Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,256" --bottleneck 256) in two steps. 
+This step trains the scDEAL model and generated predict the sensitivity of I-BET-762 of the input scRNA-Seq data from GSE110984. Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,256" --bottleneck 256) in two steps. Other applicable drugs and their resistance can be view from the table provided in the file: 
 
-For your input count matrix, you can replace the --sc_data option with your data path as follows:
+[GDSC2_label_9drugs_binary.csv](https://bmbl.bmi.osumc.edu/downloadFiles/scdeal/GDSC2_label_9drugs_binary.csv)
 
-```
-python scmodel.py --sc_data [*Your own data path*] ...
-```
-
+### Expected run time for demo
 The training time of the test case including bulk-level and single-cell-level training on the testing computer was 4 minutes.
 
-The expected output format of scDEAL is the [AnnData](https://anndata.readthedocs.io/en/latest/anndata.AnnData.html) object (.h5ad) applied by the scanpy package. The file will be stored in the directory "saved\adata\data\". The prediction of sensitivity will be stored in adata.obs["sens_label"] (if you load your AnnDdata object named as adata) where 0 represents resistance and 1 represents sensitivity respectively. Further analysis for the output can be processed by the package [Scanpy](https://scanpy.readthedocs.io/en/stable/). The object can be loaded in to python through the function: [scanpy.read_h5ad](https://scanpy.readthedocs.io/en/latest/generated/scanpy.read_h5ad.html#scanpy-read-h5ad). 
+### Expected output
+The expected output format of scDEAL is the [AnnData](https://anndata.readthedocs.io/en/latest/anndata.AnnData.html) object (.h5ad) applied by the scanpy package. The file will be stored in the directory "scDEAL/saved/adata/data/". The prediction of sensitivity will be stored in adata.obs["sens_label"] (if you load your AnnDdata object named as adata) where 0 represents resistance and 1 represents sensitivity respectively. Further analysis for the output can be processed by the package [Scanpy](https://scanpy.readthedocs.io/en/stable/). The object can be loaded in to python through the function: [scanpy.read_h5ad](https://scanpy.readthedocs.io/en/latest/generated/scanpy.read_h5ad.html#scanpy-read-h5ad). 
 
 The expected output format of a successful run show includes:
 
@@ -142,12 +143,22 @@ scDEAL
 │   │    sc_predictor_DaNN.pkl
 │   │    ...
 ```
+### Run the software on your data
+For your input count matrix, you can replace the --sc_data option with your data path as follows:
 
-For more detailed settings of the two scripts, please refer to the documentation section.
+```
+python bulkmodel.py --drug [*Your selected drug*] --data [*Your own bulk level expression*] --label [*Your own bulk level drug resistance table*] ...
+
+python scmodel.py --sc_data [*Your own data path*] ...
+```
+
+Formats for your own drug resistance table and your bulk level expression should be identical to files in the demo:
+- [GDSC2_label_9drugs_binary.csv](https://bmbl.bmi.osumc.edu/downloadFiles/scdeal/GDSC2_label_9drugs_binary.csv)
+- [GDSC2_expression.csv](https://bmbl.bmi.osumc.edu/downloadFiles/scdeal/GDSC2_expression.csv)
+
+For more detailed parameter settings of the two scripts, please refer to the documentation section.
 
 ## Documentation
-
-
 * Command: python bulkmodel.py
 ```
 usage: bulkmodel.py [-h] [--data DATA] [--label LABEL] [--result RESULT]
