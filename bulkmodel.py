@@ -7,6 +7,10 @@ import warnings
 import numpy as np
 import pandas as pd
 import torch
+from umap import UMAP
+import umap.plot
+import matplotlib.pyplot as plt
+
 from scipy.stats import pearsonr
 from sklearn import preprocessing
 from sklearn.dummy import DummyClassifier
@@ -23,7 +27,7 @@ import sampling as sam
 import utils as ut
 import trainers as t
 from models import (AEBase,PretrainedPredictor, PretrainedVAEPredictor, VAEBase)
-import matplotlib
+# import matplotlib
 
 
 def run_main(args):
@@ -58,7 +62,11 @@ def run_main(args):
     # Read data
     data_r=pd.read_csv(data_path,index_col=0)
     label_r=pd.read_csv(label_path,index_col=0)
+    ic50=pd.read_csv("data/GDSC2_label_9drugs.csv",index_col=0)
+
     label_r=label_r.fillna(na)
+    ic50=ic50.fillna(1)
+    
 
 
     now=time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -80,7 +88,7 @@ def run_main(args):
                     format=
                     '%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s'
                     )
-    logging.getLogger('matplotlib.font_manager').disabled = True
+    # logging.getLogger('matplotlib.font_manager').disabled = True
 
     logging.info(args)
 
@@ -105,6 +113,7 @@ def run_main(args):
     # Extract labels
     label = label_r.loc[selected_idx.index,select_drug]
     data_r = data_r.loc[selected_idx.index,:]
+    ic50 = ic50.loc[selected_idx.index,select_drug]
 
     # Scaling data
     mmscaler = preprocessing.MinMaxScaler()
@@ -150,6 +159,8 @@ def run_main(args):
 
     # Construct datasets and data loaders
     X_trainTensor = torch.FloatTensor(X_train).to(device)
+    X_allTensor = torch.FloatTensor(data).to(device)
+
     X_validTensor = torch.FloatTensor(X_valid).to(device)
     X_testTensor = torch.FloatTensor(X_test).to(device)
 
@@ -199,6 +210,12 @@ def run_main(args):
                             n_epochs=epochs,scheduler=exp_lr_scheduler_e,save_path=bulk_encoder)
         
         logging.info("Pretrained finished")
+    # Use pretrained model to extrac features
+    features_all = encoder.encode(X_allTensor).detach().cpu().numpy()
+    features_all_umap = UMAP().fit(features_all)
+    umap.plot.points(features_all_umap,values=ic50,theme="fire")
+    plt.savefig("saved/figures/"+reduce_model + select_drug+now+"umap_bulk_embeddings.pdf")
+    plt.clf()
 
     # Defined the model of predictor 
     if reduce_model == "AE":
@@ -229,6 +246,13 @@ def run_main(args):
                                             optimizer,loss_function,epochs,exp_lr_scheduler,load=load_model,save_path=preditor_path)
     dl_result = model(X_testTensor).detach().cpu().numpy()
 
+    features_trained_all = model.encode(X_allTensor)
+    # Use pretrained model to extrac features
+    features_trained_all = encoder.encode(X_allTensor).detach().cpu().numpy()
+    features_trained_all_umap = UMAP().fit(features_trained_all)
+    umap.plot.points(features_trained_all_umap,values=ic50,theme="fire")
+    plt.savefig("saved/figures/"+reduce_model + select_drug+now+"umap_bulk_trained_embeddings.pdf")
+    plt.clf()
 
     lb_results = np.argmax(dl_result,axis=1)
     #pb_results = np.max(dl_result,axis=1)
@@ -282,12 +306,12 @@ if __name__ == '__main__':
     parser.add_argument('--lr', type=float, default=1e-2,help='Learning rate of model training. Default: 1e-2')
     parser.add_argument('--epochs', type=int, default=500,help='Number of epoches training. Default: 500')
     parser.add_argument('--batch_size', type=int, default=200,help='Number of batch size when training. Default: 200')
-    parser.add_argument('--bottleneck', type=int, default=32,help='Size of the bottleneck layer of the model. Default: 32')
+    parser.add_argument('--bottleneck', type=int, default=256,help='Size of the bottleneck layer of the model. Default: 32')
     parser.add_argument('--dimreduce', type=str, default="AE",help='Encoder model type. Can be AE or VAE. Default: AE')
     parser.add_argument('--freeze_pretrain', type=int, default=0,help='Fix the prarmeters in the pretrained model. 0: do not freeze, 1: freeze. Default: 0')
-    parser.add_argument('--encoder_h_dims', type=str, default="512,256",help='Shape of the encoder. Each number represent the number of neuron in a layer. \
+    parser.add_argument('--encoder_h_dims', type=str, default="256,256",help='Shape of the encoder. Each number represent the number of neuron in a layer. \
                         Layers are seperated by a comma. Default: 512,256')
-    parser.add_argument('--predictor_h_dims', type=str, default="16,8",help='Shape of the predictor. Each number represent the number of neuron in a layer. \
+    parser.add_argument('--predictor_h_dims', type=str, default="128,64",help='Shape of the predictor. Each number represent the number of neuron in a layer. \
                         Layers are seperated by a comma. Default: 16,8')
     parser.add_argument('--VAErepram', type=int, default=1)
 
@@ -298,7 +322,7 @@ if __name__ == '__main__':
     warnings.filterwarnings("ignore")
 
     args, unknown = parser.parse_known_args()
-    matplotlib.use('Agg')
+    # matplotlib.use('Agg')
 
     run_main(args)
 
