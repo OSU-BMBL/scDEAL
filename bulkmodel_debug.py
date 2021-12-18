@@ -297,7 +297,7 @@ def run_main(args):
     report_df['auroc_score'] = auroc_score
     report_df['ap_score'] = ap_score
 
-    report_df.to_csv("save/logs/" + reduce_model + select_drug+now + '_report.csv')
+    report_df.to_csv("saved/logs/" + reduce_model + select_drug+now + '_report.csv')
 
     #logging.info(classification_report(Y_test, lb_results))
     #logging.info(average_precision_score(Y_test, pb_results))
@@ -309,9 +309,9 @@ def run_main(args):
     naive_probs = yhat[:, 1]
 
     ut.plot_roc_curve(Y_test, naive_probs, pb_results, title=str(roc_auc_score(Y_test, pb_results)),
-                        path="save/figures/" + reduce_model + select_drug+now + '_roc.pdf')
+                        path="saved/figures/" + reduce_model + select_drug+now + '_roc.pdf')
     ut.plot_pr_curve(Y_test,pb_results,  title=average_precision_score(Y_test, pb_results),
-                    path="save/figures/" + reduce_model + select_drug+now + '_prc.pdf')
+                    path="saved/figures/" + reduce_model + select_drug+now + '_prc.pdf')
     print("bulk_model finished")
 
 if __name__ == '__main__':
@@ -320,7 +320,7 @@ if __name__ == '__main__':
     # data 
     parser.add_argument('--data', type=str, default='data/ALL_expression.csv',help='Path of the bulk RNA-Seq expression profile')
     parser.add_argument('--label', type=str, default='data/ALL_label_binary_wf.csv',help='Path of the processed bulk RNA-Seq drug screening annotation')
-    parser.add_argument('--result', type=str, default='save/results/result_',help='Path of the training result report files')
+    parser.add_argument('--result', type=str, default='saved/results/result_',help='Path of the training result report files')
     parser.add_argument('--drug', type=str, default='I-BET-762',help='Name of the selected drug, should be a column name in the input file of --label')
     parser.add_argument('--missing_value', type=int, default=1,help='The value filled in the missing entry in the drug screening annotation, default: 1')
     parser.add_argument('--test_size', type=float, default=0.2,help='Size of the test set for the bulk model traning, default: 0.2')
@@ -332,7 +332,7 @@ if __name__ == '__main__':
     parser.add_argument('--PCA_dim', type=int, default=0,help='Number of components of PCA  reduction before training. If 0, no PCA will be performed. Default: 0')
 
     # trainv
-    parser.add_argument('--bulk_encoder','-e', type=str, default='save/bulk_encoder/',help='Path of the pre-trained encoder in the bulk level')
+    parser.add_argument('--bulk_encoder','-e', type=str, default='saved/bulk_encoder/',help='Path of the pre-trained encoder in the bulk level')
     parser.add_argument('--pretrain', type=int, default=1,help='Whether to perform pre-training of the encoder. 0: do not pretraing, 1: pretrain. Default: 0')
     parser.add_argument('--lr', type=float, default=1e-2,help='Learning rate of model training. Default: 1e-2')
     parser.add_argument('--epochs', type=int, default=500,help='Number of epoches training. Default: 500')
@@ -347,8 +347,8 @@ if __name__ == '__main__':
     parser.add_argument('--VAErepram', type=int, default=1)
     parser.add_argument('--data_name', type=str, default="GSE110894",help='Accession id for testing data, only support pre-built data.')
     # misc
-    parser.add_argument('--bulk_model', '-p',  type=str, default='save/bulk_pre/',help='Path of the trained prediction model in the bulk level')
-    parser.add_argument('--log', '-l',  type=str, default='save/logs/log',help='Path of training log')
+    parser.add_argument('--bulk_model', '-p',  type=str, default='saved/bulk_pre/',help='Path of the trained prediction model in the bulk level')
+    parser.add_argument('--log', '-l',  type=str, default='saved/logs/log',help='Path of training log')
     parser.add_argument('--load_source_model',  type=int, default=0,help='Load a trained bulk level or not. 0: do not load, 1: load. Default: 0')
     parser.add_argument('--mod', type=str, default='new',help='heterogeneous')
     parser.add_argument('--printgene', type=str, default='T',help='wether print critical gene')

@@ -120,7 +120,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import copy
 def train_DaNN_model2(net,source_loader,target_loader,
                     optimizer,loss_function,n_epochs,scheduler,dist_loss,weight=0.25,GAMMA=1000,epoch_tail=0.90,
-                    load=False,save_path="save/model.pkl",best_model_cache = "drive",top_models=5,k=10):
+                    load=False,save_path="saved/model.pkl",best_model_cache = "drive",top_models=5,k=10):
 
     if(load!=False):
         if(os.path.exists(save_path)):
@@ -378,22 +378,25 @@ def run_main(args):
         drug_path = args.drug.capitalize()
         adata = ut.process_mix_seq(drug=drug_path,expt=expID)
 
+    # Remove by junyi 20211217
+    # sc.pp.filter_cells(adata, min_genes=200)
+    # sc.pp.filter_genes(adata, min_cells=3)
 
-    sc.pp.filter_cells(adata, min_genes=200)
-    sc.pp.filter_genes(adata, min_cells=3)
-
-    adata = pp.cal_ncount_ngenes(adata)
+    # adata = pp.cal_ncount_ngenes(adata)
 
 
     #Preprocess data by filtering 
     # Edited by junyi 20211217
-    if data_name not in ['GSE112274','GSE140440']:
-        adata = pp.receipe_my(adata,l_n_genes=min_n_genes,r_n_genes=max_n_genes,filter_mincells=args.min_c,percent_mito = args.percent_mito,
-                            filter_mingenes=args.min_g,normalize=True,log=True)
-    else:
-        adata = pp.receipe_my(adata,l_n_genes=min_n_genes,r_n_genes=max_n_genes,filter_mincells=args.min_c,percent_mito = args.percent_mito,
-                            filter_mingenes=args.min_g,normalize=True,log=True)
-
+    # if data_name not in ['GSE112274','GSE140440']:
+    adata = pp.receipe_my(adata,l_n_genes=min_n_genes,r_n_genes=max_n_genes,filter_mincells=args.min_c,percent_mito = args.percent_mito,
+                        filter_mingenes=args.min_g,normalize=True,log=True)
+    # else:
+    #     adata = pp.receipe_my(adata,l_n_genes=min_n_genes,r_n_genes=max_n_genes,filter_mincells=args.min_c,percent_mito = args.percent_mito,
+    #                         filter_mingenes=args.min_g,normalize=True,log=True)
+    
+    # Add descore
+    # Edited by junyi 20211217
+    adata = ut.de_score(adata=adata,clustername="sensitivity",pval=0.05,n=50)    
 
     # Select highly variable genes
     sc.pp.highly_variable_genes(adata,min_disp=g_disperson,max_disp=np.inf,max_mean=6)
@@ -423,7 +426,7 @@ def run_main(args):
         data = mmscaler.fit_transform(data)
 
     except:
-        logging.warning("Only one class, no ROC")
+        logging.warning("Sparse data , transfrom to dense")
 
         # Process sparse data
         data = data.todense()
@@ -695,7 +698,7 @@ def run_main(args):
 ################################################# START SECTION OF ANALYSIS FOR BULK DATA #################################################
     # Save adata
   
-    adata.write("save/adata/"+data_name+para+".h5ad")
+    adata.write("adata/"+data_name+para+".h5ad")
 ################################################# END SECTION OF ANALYSIS FOR BULK DATA #################################################
     from sklearn.metrics import (average_precision_score,
                              classification_report, mean_squared_error, r2_score, roc_auc_score)
@@ -716,7 +719,7 @@ def run_main(args):
     report_dict = classification_report(Y_test, lb_results, output_dict=True)
     f1score = report_dict['weighted avg']['f1-score']
     report_df['f1_score'] = f1score
-    file = 'save/'+data_name+'_f1_score_ori.txt'
+    file = ''+data_name+'_f1_score_ori.txt'
     with open(file, 'a+') as f:
          f.write(para+'\t'+str(f1score)+'\n') 
     print("sc model finished")
@@ -773,9 +776,9 @@ if __name__ == '__main__':
     parser.add_argument('--mmd_GAMMA', type=int, default=1000,help="Gamma parameter in the kernel of the MMD loss of the transfer learning, default: 1000")
 
     # train
-    parser.add_argument('--bulk_model_path','-s', type=str, default='save/bulk_pre/',help='Path of the trained predictor in the bulk level')
-    parser.add_argument('--sc_model_path', '-p',  type=str, default='save/sc_pre/',help='Path (prefix) of the trained predictor in the single cell level')
-    parser.add_argument('--pretrain', type=str, default='save/sc_encoder/',help='Path of the pre-trained encoder in the single-cell level')
+    parser.add_argument('--bulk_model_path','-s', type=str, default='bulk_pre/',help='Path of the trained predictor in the bulk level')
+    parser.add_argument('--sc_model_path', '-p',  type=str, default='sc_pre/',help='Path (prefix) of the trained predictor in the single cell level')
+    parser.add_argument('--pretrain', type=str, default='sc_encoder/',help='Path of the pre-trained encoder in the single-cell level')
 
     parser.add_argument('--lr', type=float, default=1e-2,help='Learning rate of model training. Default: 1e-2')
     parser.add_argument('--epochs', type=int, default=500,help='Number of epoches training. Default: 500')
@@ -797,7 +800,7 @@ if __name__ == '__main__':
     parser.add_argument('--printgene', type=str, default='T',help='wether print critical gene')
     parser.add_argument('--dropout', type=float, default=0.3,help='dropout')
     # miss
-    parser.add_argument('--logging_file', '-l',  type=str, default='save/logs/transfer_',help='Path of training log')
+    parser.add_argument('--logging_file', '-l',  type=str, default='saved/logs/transfer_',help='Path of training log')
     parser.add_argument('--sampling', type=str, default=None,help='Samping method of training data for the bulk model traning. \
                         Can be upsampling, downsampling, or SMOTE. default: None')
 
