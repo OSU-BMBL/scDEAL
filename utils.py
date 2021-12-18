@@ -11,6 +11,9 @@ from scipy.stats import mannwhitneyu
 from sklearn.metrics import precision_recall_curve, roc_curve
 import scanpypip.utils as ut
 
+# Edit by junyi 20211217
+import glob
+
 def highly_variable_genes(data, 
     layer=None, n_top_genes=None, 
     min_disp=0.5, max_disp=np.inf, min_mean=0.0125, max_mean=3, 
@@ -229,7 +232,7 @@ def process_122843(adata,**kargs):
     return adata
 def process_110894(adata,**kargs):
     # Data specific preprocessing of cell info
-    file_name = 'data/GSE110894/GSE110894_CellInfo.xlsx' # change it to the name of your excel file
+    file_name = 'data/GSE110894_CellInfo.xlsx' # change it to the name of your excel file
     df_cellinfo = read_excel(file_name,header=3)
     df_cellinfo=df_cellinfo.dropna(how="all")
     df_cellinfo = df_cellinfo.fillna(method='pad')
@@ -332,7 +335,7 @@ def process_129730(adata,**kargs):
     
 def process_149383(adata,**kargs):
     # Data specific preprocessing of cell info
-    file_name = '../data/GSE149383/erl_total_2K_meta.csv' # change it to the name of your excel file
+    file_name = 'data/GSE149383/erl_total_2K_meta.csv' # change it to the name of your excel file
     df_cellinfo = pd.read_csv(file_name,header=None,index_col=0)
     sensitive = [int(row.find("res")==-1) for row in df_cellinfo.iloc[:,0]]
     adata.obs['sensitive'] = sensitive
@@ -349,6 +352,51 @@ def process_149383(adata,**kargs):
         n_genes = kargs['num_de']
     adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)    
     return adata
+
+## Edit by junyi 20211217
+def process_mix_seq(drug,expt,**kargs):
+    # Data specific preprocessing of cell info
+    treated_file_paths = glob.glob('data/10298696/'+drug+"*"+expt)
+    untreated_file_paths = glob.glob('data/10298696/DMSO*'+expt)+glob.glob('data/10298696/Untreated*'+expt)
+
+    file_paths = treated_file_paths+untreated_file_paths
+    adatas = []
+    
+    for f in file_paths:
+
+        # Read 10x
+        adata = sc.read_10x_mtx(f)
+        # Read meta file
+        meta_file_name = f+"/classifications.csv" # change it to the name of your excel file
+        df_cellinfo = pd.read_csv(meta_file_name,index_col=0)
+        # Get cells that have metea data
+        idx = adata.obs.index.intersection(df_cellinfo.index)
+        adata = adata[idx]
+        adata.obs = df_cellinfo.loc[idx,:]
+        # Add sensitive label
+        if(f in untreated_file_paths):
+            sensitive = 1
+            sens_ = 'Sensitive'
+        else:
+            sensitive = 0
+            sens_ = 'Resistant'
+
+        adata.obs['sensitive'] = sensitive
+        adata.obs['sensitivity'] = sens_
+        adatas.append(adata)
+    # Concat the data file
+    adata_cat = adatas[0].concatenate(adatas[1:])
+    adata_cat.raw = adata_cat    
+
+    # Add n_genes and pval and descore
+    pval = 0.05
+    n_genes = 50
+    if "pval_thres" in kargs:
+        pval=kargs['pval_thres']
+    if "num_de" in kargs:
+        n_genes = kargs['num_de']
+    adata_cat = de_score(adata=adata_cat,clustername="sensitivity",pval=pval,n=n_genes)    
+    return adata_cat
 
 def integrated_gradient_check(net,input,target,adata,n_genes,target_class=1,test_value="expression",save_name="feature_gradients",batch_size=100):
         ig = IntegratedGradients(net)
@@ -476,3 +524,43 @@ def plot_loss(report,path="figures/loss.pdf",set_ylim=False):
     plt.close()
 
     return score_dict
+
+def integrated_gradient_differential(net,input,target,adata,n_genes=None,target_class=1,clip="abs",save_name="feature_gradients",ig_pval=0.05,ig_fc=1,method="wilcoxon",batch_size=100):
+        
+        # Caculate integrated gradient
+        ig = IntegratedGradients(net)
+
+        df_results = {}
+
+        attr, delta = ig.attribute(input,target=target_class, return_convergence_delta=True,internal_batch_size=batch_size)
+        attr = attr.detach().cpu().numpy()
+
+        if clip == 'positive':
+            attr = np.clip(attr,a_min=0,a_max=None)
+        elif clip == 'negative':
+            attr = abs(np.clip(attr,a_min=None,a_max=0))
+        else:
+            attr = abs(attr)
+
+        igadata= sc.AnnData(attr)
+        igadata.var.index = adata.var.index
+        igadata.obs.index = adata.obs.index
+
+        igadata.obs['sensitive'] = target
+        igadata.obs['sensitive'] = igadata.obs['sensitive'].astype('category')
+
+        sc.tl.rank_genes_groups(igadata, 'sensitive', method=method,n_genes=n_genes)
+
+        for label in [0,1]:
+
+            try:
+                df_degs = ut.get_de_dataframe(igadata,label)
+                df_degs = df_degs.loc[(df_degs.pvals_adj<ig_pval) & (df_degs.logfoldchanges>=ig_fc)]
+                df_degs.to_csv("saved/results/DIG_class_" +str(target_class)+"_"+str(label)+ save_name + '.csv')
+
+                df_results[label]= df_degs
+            except:
+                logging.warning("Only one class, no two calsses critical genes")
+
+        return adata,igadata,list(df_results[0].names),list(df_results[1].names)
+

@@ -22,5 +22,5 @@ def nosampling(X_train,Y_train):
 ##SOMTE
 def SMOTEsampling(X_train,Y_train):
     sm=SMOTE(random_state=42)
-    X_train, Y_train = sm.fit_sample(X_train, Y_train)
+    X_train, Y_train = sm.fit_resample(X_train, Y_train)
     return X_train,Y_train

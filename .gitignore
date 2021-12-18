@@ -13,6 +13,7 @@ saved/adata
 data/
 # C extensions
 *.so
+*.bat
 
 # Distribution / packaging
 .Python
