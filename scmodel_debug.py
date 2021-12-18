@@ -312,7 +312,7 @@ def run_main(args):
     load_model = bool(args.load_sc_model)
     mod = args.mod
     
-    para = "1214data_"+args.sc_data+"_drug_"+args.drug+"_bottle_"+str(args.bottleneck)+"_edim_"+args.bulk_h_dims+"_pdim_"+args.predictor_h_dims+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+args.printgene+"_lr_"+str(args.lr)+"_mod_"+args.mod+"_sam_"+args.sampling
+    para = "1214data_"+args.sc_data+"_drug_"+args.drug+"_bottle_"+str(args.bottleneck)+"_edim_"+args.bulk_h_dims+"_pdim_"+args.predictor_h_dims+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+args.printgene+"_lr_"+str(args.lr)+"_mod_"+args.mod+"_sam_"+str(args.sampling)
     source_data_path = args.bulk_data
     pretrain = args.pretrain+para
     source_model_path = args.bulk_model_path+para
@@ -755,8 +755,8 @@ if __name__ == '__main__':
     # data 
     parser.add_argument('--bulk_data', type=str, default='data//ALL_expression.csv',help='Path of the bulk RNA-Seq expression profile')
     parser.add_argument('--label', type=str, default='data/ALL_label_binary_wf.csv',help='Path of the processed bulk RNA-Seq drug screening annotation')
-    parser.add_argument('--sc_data', type=str, default="GSE110894",help='Accession id for testing data, only support pre-built data.')
-    parser.add_argument('--drug', type=str, default='Cisplatin',help='Name of the selected drug, should be a column name in the input file of --label')
+    parser.add_argument('--sc_data', type=str, default="MIX-Seq",help='Accession id for testing data, only support pre-built data.')
+    parser.add_argument('--drug', type=str, default='AFATINIB',help='Name of the selected drug, should be a column name in the input file of --label')
     parser.add_argument('--missing_value', type=int, default=1,help='The value filled in the missing entry in the drug screening annotation, default: 1')
     parser.add_argument('--test_size', type=float, default=0.2,help='Size of the test set for the bulk model traning, default: 0.2')
     parser.add_argument('--valid_size', type=float, default=0.2,help='Size of the validation set for the bulk model traning, default: 0.2')
@@ -790,7 +790,7 @@ if __name__ == '__main__':
     parser.add_argument('--predictor_h_dims', type=str, default="16,8",help='Shape of the predictor. Each number represent the number of neuron in a layer. \
                         Layers are seperated by a comma. Default: 16,8')
     parser.add_argument('--VAErepram', type=int, default=1)
-    parser.add_argument('--batch_id', type=str, default="HN137",help="Batch id only for testing")
+    parser.add_argument('--batch_id', type=str, default="expt10",help="Batch id only for testing")
     parser.add_argument('--load_sc_model', type=int, default=0,help='Load a trained model or not. 0: do not load, 1: load. Default: 0')
     
     parser.add_argument('--mod', type=str, default='new',help='heterogeneous')

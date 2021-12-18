@@ -395,7 +395,7 @@ def process_mix_seq(drug,expt,**kargs):
         pval=kargs['pval_thres']
     if "num_de" in kargs:
         n_genes = kargs['num_de']
-    adata_cat = de_score(adata=adata_cat,clustername="sensitivity",pval=pval,n=n_genes)    
+    #adata_cat = de_score(adata=adata_cat,clustername="sensitivity",pval=pval,n=n_genes)    
     return adata_cat
 
 def integrated_gradient_check(net,input,target,adata,n_genes,target_class=1,test_value="expression",save_name="feature_gradients",batch_size=100):
