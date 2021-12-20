@@ -695,10 +695,6 @@ def run_main(args):
 ################################################# START SECTION OF ANALYSIS AND POST PROCESSING #################################################
 ################################################# END SECTION OF ANALYSIS AND POST PROCESSING #################################################
 
-################################################# START SECTION OF ANALYSIS FOR BULK DATA #################################################
-    # Save adata
-  
-    adata.write("adata/"+data_name+para+".h5ad")
 ################################################# END SECTION OF ANALYSIS FOR BULK DATA #################################################
     from sklearn.metrics import (average_precision_score,
                              classification_report, mean_squared_error, r2_score, roc_auc_score)
@@ -749,6 +745,11 @@ def run_main(args):
         DataFrame(adata.var.index).to_csv(sc_gen)
         DataFrame(adata.obs["sens_label"]).to_csv(sc_lab)
     t1 = time.time()
+
+################################################# START SECTION OF ANALYSIS FOR BULK DATA #################################################
+    # Save adata
+  
+    adata.write("adata/"+data_name+para+".h5ad")
 
     #logging.info("End at " + str(t1)+", takes :" )
 
