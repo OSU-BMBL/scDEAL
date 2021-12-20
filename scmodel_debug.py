@@ -715,6 +715,12 @@ def run_main(args):
     report_dict = classification_report(Y_test, lb_results, output_dict=True)
     f1score = report_dict['weighted avg']['f1-score']
     report_df['f1_score'] = f1score
+
+    # Only on the bulke level prediction
+    report_pret_dict = classification_report(Y_test, lb_pret, output_dict=True)
+    f1score_pret = report_pret_dict['weighted avg']['f1-score']
+    report_df['f1_score_pret'] = f1score_pret
+
     file = ''+data_name+'_f1_score_ori.txt'
     with open(file, 'a+') as f:
          f.write(para+'\t'+str(f1score)+'\n') 
@@ -750,7 +756,7 @@ def run_main(args):
     # Save adata
   
     adata.write("adata/"+data_name+para+".h5ad")
-
+    report_df.to_csv(''+data_name+'_compare_bulk_trans_f1_score_ori.csv')
     #logging.info("End at " + str(t1)+", takes :" )
 
 
