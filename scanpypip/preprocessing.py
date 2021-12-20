@@ -183,13 +183,14 @@ def cal_ncount_ngenes(adata,sparse=False,remove_keys=[]):
 
     return adata
 
-def receipe_my(adata,l_n_genes = 500, r_n_genes= 5000, filter_mincells=3,filter_mingenes=200, percent_mito = 5, normalize = False,log = False,sparse = False,plotinfo= False,
+def receipe_my(adata,l_n_genes = 500, r_n_genes= 5000, filter_mincells=3,filter_mingenes=200, percent_mito = 5, normalize = False,log = False,sparse = False,plotinfo= False,qc=False,
                 remove_genes=[]):
 
     sc.pp.filter_cells(adata, min_genes=filter_mingenes)
     sc.pp.filter_genes(adata, min_cells=filter_mincells)
-    
-    adata = cal_ncount_ngenes(adata,remove_keys=remove_genes)
+
+    if(qc==True):
+        adata = cal_ncount_ngenes(adata,remove_keys=remove_genes)
 
     # if sparse == False:    
     #     adata.obs['n_counts'] = adata.X.sum(axis=1)
@@ -205,7 +206,7 @@ def receipe_my(adata,l_n_genes = 500, r_n_genes= 5000, filter_mincells=3,filter_
     adata = adata[adata.obs['pct_counts_mt-'] < percent_mito, :]
 
     if(plotinfo!=False):
-        sc.pl.violin(adata, ['n_genes_by_counts', 'total_counts', 'pct_counts_mt-'],
+        sc.pl.violin(adata, ['n_genes_by_counts', 'total_counts'],
              jitter=0.4, multi_panel=True, save=True)
         #plt.savefig(plotinfo)
 
