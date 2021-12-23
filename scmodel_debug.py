@@ -683,6 +683,10 @@ def run_main(args):
     adata.obs["sens_label"] = predictions.argmax(axis=1)
     adata.obs["sens_label"] = adata.obs["sens_label"].astype('category')
     adata.obs["rest_preds"] = predictions[:,0]
+
+    # Add by junyi 20211223
+    adata.obsm["X_Trans"] = embeddings
+
     
 ################################################# END SECTION OF PREPROCESSING FEATURES #################################################
     
