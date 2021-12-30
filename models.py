@@ -610,9 +610,14 @@ class PretrainedVAEPredictor(VAEBase):
         return  output
 
 class DaNN(nn.Module):
-    def __init__(self, source_model,target_model):
+    def __init__(self, source_model,target_model,fix_source=False):
         super(DaNN, self).__init__()
         self.source_model = source_model
+        if fix_source == True:
+            for p in self.parameters():
+                p.requires_grad = False
+                print("Layer weight is freezed:",format(p.shape))
+                # Stop until the bottleneck layer
         self.target_model = target_model
 
     def forward(self, X_source, X_target,C_target=None):

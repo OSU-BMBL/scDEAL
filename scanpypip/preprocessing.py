@@ -199,11 +199,11 @@ def receipe_my(adata,l_n_genes = 500, r_n_genes= 5000, filter_mincells=3,filter_
     #     adata.obs['n_counts'] = adata.X.sum(axis=1).A1
     #     adata.obs['percent_mito'] = np.sum(adata[:, mito_genes].X, axis=1).A1 / np.sum(adata.X, axis=1).A1
 
-    adata = adata[
-        np.logical_and(
-        (adata.obs['n_genes_by_counts'] > l_n_genes), 
-        (adata.obs['n_genes_by_counts'] < r_n_genes)),:]
-    adata = adata[adata.obs['pct_counts_mt-'] < percent_mito, :]
+        adata = adata[
+            np.logical_and(
+            (adata.obs['n_genes_by_counts'] > l_n_genes), 
+            (adata.obs['n_genes_by_counts'] < r_n_genes)),:]
+        adata = adata[adata.obs['pct_counts_mt-'] < percent_mito, :]
 
     if(plotinfo!=False):
         sc.pl.violin(adata, ['n_genes_by_counts', 'total_counts'],
