@@ -621,7 +621,7 @@ def run_main(args):
     exp_lr_scheduler_d = lr_scheduler.ReduceLROnPlateau(optimizer_d)
        
     # Set DaNN model
-    DaNN_model = DaNN(source_model=source_encoder,target_model=encoder)
+    DaNN_model = DaNN(source_model=source_encoder,target_model=encoder,fix_source=bool(args.fix_source))
     DaNN_model.to(device)
 
     def loss(x,y,GAMMA=args.mmd_GAMMA):
@@ -790,6 +790,7 @@ if __name__ == '__main__':
     parser.add_argument('--bulk_model_path','-s', type=str, default='bulk_pre/',help='Path of the trained predictor in the bulk level')
     parser.add_argument('--sc_model_path', '-p',  type=str, default='sc_pre/',help='Path (prefix) of the trained predictor in the single cell level')
     parser.add_argument('--pretrain', type=str, default='sc_encoder/',help='Path of the pre-trained encoder in the single-cell level')
+    parser.add_argument('--fix_source', type=int, default=0,help='Fix the bulk level model. Default: 0')
 
     parser.add_argument('--lr', type=float, default=1e-2,help='Learning rate of model training. Default: 1e-2')
     parser.add_argument('--epochs', type=int, default=500,help='Number of epoches training. Default: 500')
