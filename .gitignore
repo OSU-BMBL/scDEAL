@@ -11,6 +11,7 @@ saved/results
 saved/figures
 saved/adata
 data/
+figures/
 # C extensions
 *.so
 *.bat
