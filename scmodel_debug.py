@@ -56,6 +56,7 @@ DATA_MAP={
 "GSE140440":"data/GSE140440/GSE140440.csv",
 "GSE129730":"data/GSE129730/GSE129730.h5ad",
 "GSE149383":"data/GSE149383/erl_total_data_2K.csv",
+"GSE149383_comb":"data/GSE149383/combination/GSE149383.h5ad",
 "GSE110894_small":"data/GSE110894/GSE110894_small.h5ad",
 ## Add by junyi 20211217
 "MIX-Seq":"data/10298696"
