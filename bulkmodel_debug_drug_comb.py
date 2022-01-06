@@ -73,7 +73,7 @@ def run_main(args):
         select_drug = [drug1,drug2]
         dim_model_out = 4
         num_drugs = len(select_drug)
-
+    ### Add by junyi 20220106
 
     para = "1214data_"+args.data_name+"_drug_"+args.drug+"_bottle_"+str(args.bottleneck)+"_edim_"+args.encoder_h_dims+"_pdim_"+args.predictor_h_dims+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+args.printgene+"_lr_"+str(args.lr)+"_mod_"+args.mod+"_sam_"+str(args.sampling)
     #(para)
@@ -112,6 +112,7 @@ def run_main(args):
     ### Add by junyi 20220106
     selected_idx = label_r.loc[:,select_drug]!=na
     selected_idx = selected_idx.min(axis=1)
+    ### Add by junyi 20220106
 
     if(g_disperson!=None):
         hvg,adata = ut.highly_variable_genes(data_r,min_disp=g_disperson)
@@ -132,8 +133,10 @@ def run_main(args):
     label = label_r.loc[selected_idx.index,select_drug]
     data_r = data_r.loc[selected_idx.index,:]
 
+    ### Add by junyi 20220106
     if(num_drugs>1):
         label=label.sum(axis=1)
+    ### Add by junyi 20220106
 
     # Scaling data
     mmscaler = preprocessing.MinMaxScaler()
@@ -301,31 +304,36 @@ def run_main(args):
 
     lb_results = np.argmax(dl_result,axis=1)
     #pb_results = np.max(dl_result,axis=1)
-    pb_results = dl_result[:,1]
 
     report_dict = classification_report(Y_test, lb_results, output_dict=True)
     report_df = pd.DataFrame(report_dict).T
-    ap_score = average_precision_score(Y_test, pb_results)
-    auroc_score = roc_auc_score(Y_test, pb_results)
 
-    report_df['auroc_score'] = auroc_score
-    report_df['ap_score'] = ap_score
+    ## Add by junyi 2022 0106
+    if(num_drugs==2):
+        pb_results = dl_result[:,1]
+
+        ap_score = average_precision_score(Y_test, pb_results)
+        auroc_score = roc_auc_score(Y_test, pb_results)
+
+        report_df['auroc_score'] = auroc_score
+        report_df['ap_score'] = ap_score
+        #logging.info(classification_report(Y_test, lb_results))
+        #logging.info(average_precision_score(Y_test, pb_results))
+        #logging.info(roc_auc_score(Y_test, pb_results))
+
+        model = DummyClassifier(strategy='stratified')
+        model.fit(X_train, Y_train)
+        yhat = model.predict_proba(X_test)
+        naive_probs = yhat[:, 1]
+
+        ut.plot_roc_curve(Y_test, naive_probs, pb_results, title=str(roc_auc_score(Y_test, pb_results)),
+                            path="saved/figures/" + reduce_model + select_drug+now + '_roc.pdf')
+        ut.plot_pr_curve(Y_test,pb_results,  title=average_precision_score(Y_test, pb_results),
+                        path="saved/figures/" + reduce_model + select_drug+now + '_prc.pdf')
+
 
     report_df.to_csv("saved/logs/" + reduce_model + select_drug+now + '_report.csv')
 
-    #logging.info(classification_report(Y_test, lb_results))
-    #logging.info(average_precision_score(Y_test, pb_results))
-    #logging.info(roc_auc_score(Y_test, pb_results))
-
-    model = DummyClassifier(strategy='stratified')
-    model.fit(X_train, Y_train)
-    yhat = model.predict_proba(X_test)
-    naive_probs = yhat[:, 1]
-
-    ut.plot_roc_curve(Y_test, naive_probs, pb_results, title=str(roc_auc_score(Y_test, pb_results)),
-                        path="saved/figures/" + reduce_model + select_drug+now + '_roc.pdf')
-    ut.plot_pr_curve(Y_test,pb_results,  title=average_precision_score(Y_test, pb_results),
-                    path="saved/figures/" + reduce_model + select_drug+now + '_prc.pdf')
     print("bulk_model finished")
 
 if __name__ == '__main__':
@@ -341,7 +349,7 @@ if __name__ == '__main__':
     parser.add_argument('--valid_size', type=float, default=0.2,help='Size of the validation set for the bulk model traning, default: 0.2')
     parser.add_argument('--var_genes_disp', type=float, default=None,help='Dispersion of highly variable genes selection when pre-processing the data. \
                          If None, all genes will be selected .default: None')
-    parser.add_argument('--sampling', type=str, default=None,help='Samping method of training data for the bulk model traning. \
+    parser.add_argument('--sampling', type=str, default='SMOTE',help='Samping method of training data for the bulk model traning. \
                         Can be upsampling, downsampling, or SMOTE. default: None')
     parser.add_argument('--PCA_dim', type=int, default=0,help='Number of components of PCA  reduction before training. If 0, no PCA will be performed. Default: 0')
 
