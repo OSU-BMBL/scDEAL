@@ -308,7 +308,7 @@ def run_main(args):
     report_dict = classification_report(Y_test, lb_results, output_dict=True)
     report_df = pd.DataFrame(report_dict).T
 
-    ## Add by junyi 2022 0106
+    ## Add by junyi 20220106
     if(num_drugs==2):
         pb_results = dl_result[:,1]
 

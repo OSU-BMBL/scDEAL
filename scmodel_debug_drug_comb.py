@@ -294,11 +294,16 @@ def run_main(args):
 
     ### Add by junyi 20220106
     dim_model_out = 2
+    num_drugs = 1
+
     if(len(select_drug.split(","))>1):
         drug1 = select_drug.split(",")[0]
         drug2 = select_drug.split(",")[1]
-        select_drugs = [drug1,drug2]
+        select_drug = [drug1,drug2]
         dim_model_out = 4
+        num_drugs = len(select_drug)
+    ### Add by junyi 20220106
+
 
     freeze = args.freeze_pretrain
     valid_size = args.valid_size
@@ -484,11 +489,21 @@ def run_main(args):
     label_r=label_r.fillna(na)
 
     # Extract labels
+    ### Add by junyi 20220106
     selected_idx = label_r.loc[:,select_drug]!=na
+    selected_idx = selected_idx.min(axis=1)
+    ### Add by junyi 20220106
     label = label_r.loc[selected_idx.index,select_drug]
     data_r = data_r.loc[selected_idx.index,:]
+
+    if(num_drugs>1):
+        label=label.sum(axis=1)
     label = label.values.reshape(-1,1)
 
+    ### Add by junyi 20220106
+    if(num_drugs>1):
+        label=label.sum(axis=1)
+    ### Add by junyi 20220106
 
     le = preprocessing.LabelEncoder()
     label = le.fit_transform(label)
@@ -542,8 +557,10 @@ def run_main(args):
     loss_function_e = nn.MSELoss()
     exp_lr_scheduler_e = lr_scheduler.ReduceLROnPlateau(optimizer_e)
 
+    # Removed by junyi 20220106
+    # dim_model_out = 2
+    # Removed by junyi 20220106
 
-    dim_model_out = 2
     # Load AE model
     if reduce_model == "AE":
         source_model = PretrainedPredictor(input_dim=Xsource_train.shape[1],latent_dim=dim_au_out,h_dims=encoder_hdims, 
@@ -612,7 +629,14 @@ def run_main(args):
         embeddings_pretrain = encoder.encode(X_allTensor)
         print(embeddings_pretrain)
         pretrain_prob_prediction = source_model.predict(embeddings_pretrain).detach().cpu().numpy()
-        adata.obs["sens_preds_pret"] = pretrain_prob_prediction[:,1]
+
+        ### Edit by junyi 20220106
+        if(num_drugs>1):
+            for i in range(0,pretrain_prob_prediction.shape[1]):
+                adata.obs["sens_preds_pret_"+str(i)] = pretrain_prob_prediction[:,i]
+        else:
+            adata.obs["sens_preds_pret"] = pretrain_prob_prediction[:,1]
+        ### Edit by junyi 20220106
         adata.obs["sens_label_pret"] = pretrain_prob_prediction.argmax(axis=1)
 
         # Add embeddings to the adata object
@@ -688,10 +712,18 @@ def run_main(args):
     print("predictions",predictions.shape)
     # Transform predict8ion probabilities to 0-1 labels
 
-    adata.obs["sens_preds"] = predictions[:,1]
     adata.obs["sens_label"] = predictions.argmax(axis=1)
     adata.obs["sens_label"] = adata.obs["sens_label"].astype('category')
-    adata.obs["rest_preds"] = predictions[:,0]
+
+
+    # Add by junyi 20220116
+    if(num_drugs<2):
+        adata.obs["sens_preds"] = predictions[:,1]
+        adata.obs["rest_preds"] = predictions[:,0]
+    else:
+        for i in range(0,pretrain_prob_prediction.shape[1]):
+            adata.obs["sens_preds_pret_"+str(i)] = pretrain_prob_prediction[:,i]
+    # Add by junyi 20220116
 
     # Add by junyi 20211223
     adata.obsm["X_Trans"] = embeddings
@@ -709,67 +741,71 @@ def run_main(args):
 ################################################# END SECTION OF ANALYSIS AND POST PROCESSING #################################################
 
 ################################################# END SECTION OF ANALYSIS FOR BULK DATA #################################################
-    from sklearn.metrics import (average_precision_score,
-                             classification_report, mean_squared_error, r2_score, roc_auc_score)
-    sens_pb_pret = adata.obs['sens_preds_pret']
-    lb_pret = adata.obs['sens_label_pret']
-    report_df = {}
-    Y_test = adata.obs['sensitive']
-    sens_pb_results = adata.obs['sens_preds']
-    lb_results = adata.obs['sens_label']
-    
-    #Y_test ture label
-    ap_score = average_precision_score(Y_test, sens_pb_results)
-    ap_pret = average_precision_score(Y_test, sens_pb_pret)
-    # ap_umap = average_precision_score(Y_test, sens_pb_umap)
-    # ap_tsne = average_precision_score(Y_test, sens_pb_tsne)
-    
-    
-    report_dict = classification_report(Y_test, lb_results, output_dict=True)
-    f1score = report_dict['weighted avg']['f1-score']
-    report_df['f1_score'] = f1score
+    ## Edit junyi 20220116, whole things happens only if the number of gene < 2
+    if(num_drugs<2):
+        from sklearn.metrics import (average_precision_score,
+                                classification_report, mean_squared_error, r2_score, roc_auc_score)
+        sens_pb_pret = adata.obs['sens_preds_pret']
+        lb_pret = adata.obs['sens_label_pret']
+        report_df = {}
+        Y_test = adata.obs['sensitive']
+        sens_pb_results = adata.obs['sens_preds']
+        lb_results = adata.obs['sens_label']
+        
+        #Y_test ture label
+        ap_score = average_precision_score(Y_test, sens_pb_results)
+        ap_pret = average_precision_score(Y_test, sens_pb_pret)
+        # ap_umap = average_precision_score(Y_test, sens_pb_umap)
+        # ap_tsne = average_precision_score(Y_test, sens_pb_tsne)
+        
+        
+        report_dict = classification_report(Y_test, lb_results, output_dict=True)
+        f1score = report_dict['weighted avg']['f1-score']
+        report_df['f1_score'] = f1score
 
-    # Only on the bulke level prediction
-    report_pret_dict = classification_report(Y_test, lb_pret, output_dict=True)
-    f1score_pret = report_pret_dict['weighted avg']['f1-score']
-    report_df['f1_score_pret'] = f1score_pret
+        # Only on the bulke level prediction
+        report_pret_dict = classification_report(Y_test, lb_pret, output_dict=True)
+        f1score_pret = report_pret_dict['weighted avg']['f1-score']
+        report_df['f1_score_pret'] = f1score_pret
 
-    file = ''+data_name+'_f1_score_ori.txt'
-    with open(file, 'a+') as f:
-         f.write(para+'\t'+str(f1score)+'\n') 
-    print("sc model finished")
-    if (args.printgene=='T'):
-        target_model = TargetModel(source_model,encoder)
-        sc_X_allTensor=X_allTensor
-        
-        ytarget_allPred = target_model(sc_X_allTensor).detach().cpu().numpy()
-        ytarget_allPred = ytarget_allPred.argmax(axis=1)
-        # Caculate integrated gradient
-        ig = IntegratedGradients(target_model)
-        
-        
-        scattr, delta =  ig.attribute(sc_X_allTensor,target=1, return_convergence_delta=True,internal_batch_size=batch_size)
-        scattr = scattr.detach().cpu().numpy()
-        
-        igadata= sc.AnnData(scattr)
-        igadata.var.index = adata.var.index
-        igadata.obs.index = adata.obs.index
-        sc_gra = "ori_result/" + data_name +"sc_gradient.txt"
-        #sc_exp = "result/" + data_name +"sc_expression.txt"
-        sc_gen = "ori_result/" + data_name +"sc_gene.csv"
-        sc_lab = "ori_result/" + data_name +"sc_label.csv"
-        #np.savetxt("result/sc_embedding.txt",(sc_X_allTensor).detach().cpu().numpy(),delimiter = " ")
-        #np.savetxt(sc_exp,adata.X,delimiter = " ")
-        np.savetxt(sc_gra,scattr,delimiter = " ")
-        DataFrame(adata.var.index).to_csv(sc_gen)
-        DataFrame(adata.obs["sens_label"]).to_csv(sc_lab)
+        file = ''+data_name+'_f1_score_ori.txt'
+        with open(file, 'a+') as f:
+            f.write(para+'\t'+str(f1score)+'\n') 
+        print("sc model finished")
+
+        report_df.to_csv(''+data_name+'_compare_bulk_trans_f1_score_ori.csv')
+
+        if (args.printgene=='T'):
+            target_model = TargetModel(source_model,encoder)
+            sc_X_allTensor=X_allTensor
+            
+            ytarget_allPred = target_model(sc_X_allTensor).detach().cpu().numpy()
+            ytarget_allPred = ytarget_allPred.argmax(axis=1)
+            # Caculate integrated gradient
+            ig = IntegratedGradients(target_model)
+            
+            
+            scattr, delta =  ig.attribute(sc_X_allTensor,target=1, return_convergence_delta=True,internal_batch_size=batch_size)
+            scattr = scattr.detach().cpu().numpy()
+            
+            igadata= sc.AnnData(scattr)
+            igadata.var.index = adata.var.index
+            igadata.obs.index = adata.obs.index
+            sc_gra = "ori_result/" + data_name +"sc_gradient.txt"
+            #sc_exp = "result/" + data_name +"sc_expression.txt"
+            sc_gen = "ori_result/" + data_name +"sc_gene.csv"
+            sc_lab = "ori_result/" + data_name +"sc_label.csv"
+            #np.savetxt("result/sc_embedding.txt",(sc_X_allTensor).detach().cpu().numpy(),delimiter = " ")
+            #np.savetxt(sc_exp,adata.X,delimiter = " ")
+            np.savetxt(sc_gra,scattr,delimiter = " ")
+            DataFrame(adata.var.index).to_csv(sc_gen)
+            DataFrame(adata.obs["sens_label"]).to_csv(sc_lab)
     t1 = time.time()
 
 ################################################# START SECTION OF ANALYSIS FOR BULK DATA #################################################
     # Save adata
   
     adata.write("adata/"+data_name+para+".h5ad")
-    report_df.to_csv(''+data_name+'_compare_bulk_trans_f1_score_ori.csv')
     #logging.info("End at " + str(t1)+", takes :" )
 
 
@@ -778,8 +814,8 @@ if __name__ == '__main__':
     # data 
     parser.add_argument('--bulk_data', type=str, default='data/ALL_expression.csv',help='Path of the bulk RNA-Seq expression profile')
     parser.add_argument('--label', type=str, default='data/ALL_label_binary_wf.csv',help='Path of the processed bulk RNA-Seq drug screening annotation')
-    parser.add_argument('--sc_data', type=str, default="MIX-Seq",help='Accession id for testing data, only support pre-built data.')
-    parser.add_argument('--drug', type=str, default='AFATINIB',help='Name of the selected drug, should be a column name in the input file of --label')
+    parser.add_argument('--sc_data', type=str, default="GSE149383_comb",help='Accession id for testing data, only support pre-built data.')
+    parser.add_argument('--drug', type=str, default='ERLOTINIB,CRIZOTINIB',help='Name of the selected drug, should be a column name in the input file of --label')
     parser.add_argument('--missing_value', type=int, default=1,help='The value filled in the missing entry in the drug screening annotation, default: 1')
     parser.add_argument('--test_size', type=float, default=0.2,help='Size of the test set for the bulk model traning, default: 0.2')
     parser.add_argument('--valid_size', type=float, default=0.2,help='Size of the validation set for the bulk model traning, default: 0.2')
@@ -796,15 +832,15 @@ if __name__ == '__main__':
     parser.add_argument('--mmd_GAMMA', type=int, default=1000,help="Gamma parameter in the kernel of the MMD loss of the transfer learning, default: 1000")
 
     # train
-    parser.add_argument('--bulk_model_path','-s', type=str, default='bulk_pre/',help='Path of the trained predictor in the bulk level')
-    parser.add_argument('--sc_model_path', '-p',  type=str, default='sc_pre/',help='Path (prefix) of the trained predictor in the single cell level')
-    parser.add_argument('--pretrain', type=str, default='sc_encoder/',help='Path of the pre-trained encoder in the single-cell level')
+    parser.add_argument('--bulk_model_path','-s', type=str, default='saved/bulk_pre/',help='Path of the trained predictor in the bulk level')
+    parser.add_argument('--sc_model_path', '-p',  type=str, default='saved/sc_pre/',help='Path (prefix) of the trained predictor in the single cell level')
+    parser.add_argument('--pretrain', type=str, default='saved/sc_encoder/',help='Path of the pre-trained encoder in the single-cell level')
     parser.add_argument('--fix_source', type=int, default=0,help='Fix the bulk level model. Default: 0')
 
     parser.add_argument('--lr', type=float, default=1e-2,help='Learning rate of model training. Default: 1e-2')
     parser.add_argument('--epochs', type=int, default=500,help='Number of epoches training. Default: 500')
     parser.add_argument('--batch_size', type=int, default=200,help='Number of batch size when training. Default: 200')
-    parser.add_argument('--bottleneck', type=int, default=512,help='Size of the bottleneck layer of the model. Default: 32')
+    parser.add_argument('--bottleneck', type=int, default=32,help='Size of the bottleneck layer of the model. Default: 32')
     parser.add_argument('--dimreduce', type=str, default="AE",help='Encoder model type. Can be AE or VAE. Default: AE')
     parser.add_argument('--freeze_pretrain', type=int,default=0,help='Fix the prarmeters in the pretrained model. 0: do not freeze, 1: freeze. Default: 0')
     parser.add_argument('--bulk_h_dims', type=str, default="512,256",help='Shape of the source encoder. Each number represent the number of neuron in a layer. \
