@@ -79,7 +79,7 @@ plot_cells(cds,
 ggsave(filename  = paste("results/",data,subset[1],"_cell_color.svg", sep = "") , width = 3, height = 3, device='svg', dpi=400)
 
 
-# Path of the critical genes name list
+# Path of the critical genes name list formated as DATASET-s/r.csv only gene name
 f_sg <- Sys.glob(paste("data/*",data,"*s*csv", sep = ""))[1]
 f_rg <- Sys.glob(paste("data/*",data,"*r*csv", sep = ""))[1]
 
@@ -90,7 +90,7 @@ df_rg <- read.csv(file = f_rg,header = FALSE)
 SC_genes <- c(head(df_sg,5))[[1]]
 RC_genes <- c(head(df_rg,5))[[1]]
 
-
+# Plot of tarjectories
 
 plotc(cds,genes = SC_genes,   
       label_groups_by_cluster=FALSE,
