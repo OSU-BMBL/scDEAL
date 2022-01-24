@@ -300,7 +300,7 @@ def run_main(args):
         drug1 = select_drug.split(",")[0]
         drug2 = select_drug.split(",")[1]
         select_drug = [drug1,drug2]
-        dim_model_out = 4
+        dim_model_out = 2
         num_drugs = len(select_drug)
     ### Add by junyi 20220106
 
@@ -502,10 +502,11 @@ def run_main(args):
 
     ### Add by junyi 20220106
     if(num_drugs>1):
-        label=label.sum(axis=1)
         doulbe_idx = (label.iloc[:,0] == label.iloc[:,1])
         label = label[doulbe_idx]
-        data_r = data_r[doulbe_idx]
+        data = data_r[doulbe_idx]
+        label=label.sum(axis=1)
+
     ### Add by junyi 20220106
 
     le = preprocessing.LabelEncoder()
