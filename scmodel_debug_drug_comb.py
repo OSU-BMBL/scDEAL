@@ -503,6 +503,9 @@ def run_main(args):
     ### Add by junyi 20220106
     if(num_drugs>1):
         label=label.sum(axis=1)
+        doulbe_idx = (label.iloc[:,0] == label.iloc[:,1])
+        label = label[doulbe_idx]
+        data_r = data_r[doulbe_idx]
     ### Add by junyi 20220106
 
     le = preprocessing.LabelEncoder()
