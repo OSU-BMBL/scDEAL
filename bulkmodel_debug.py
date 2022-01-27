@@ -65,7 +65,7 @@ def run_main(args):
 
     
 
-    para = "1214data_"+args.data_name+"_drug_"+args.drug+"_bottle_"+str(args.bottleneck)+"_edim_"+args.encoder_h_dims+"_pdim_"+args.predictor_h_dims+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+args.printgene+"_lr_"+str(args.lr)+"_mod_"+args.mod+"_sam_"+args.sampling
+    para = "1214data_"+args.data_name+"_drug_"+args.drug+"_bottle_"+str(args.bottleneck)+"_edim_"+args.encoder_h_dims+"_pdim_"+args.predictor_h_dims+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+args.printgene+"_lr_"+str(args.lr)+"_mod_"+args.mod+"_sam_"+str(args.sampling)
     #(para)
     now=time.strftime("%Y-%m-%d-%H-%M-%S")
     
@@ -76,7 +76,7 @@ def run_main(args):
     # Read data
     data_r=pd.read_csv(data_path,index_col=0)
     label_r=pd.read_csv(label_path,index_col=0)
-    label_r=label_r.fillna(na)
+    #label_r=label_r.fillna(na)
     ut.save_arguments(args,now)
 
 
@@ -99,8 +99,7 @@ def run_main(args):
     logging.info(args)
 
     # Filter out na values
-    selected_idx = label_r.loc[:,select_drug]!=na
-
+    selected_idx = label_r.loc[:,select_drug].dropna()
     if(g_disperson!=None):
         hvg,adata = ut.highly_variable_genes(data_r,min_disp=g_disperson)
         # Rename columns if duplication exist
@@ -319,9 +318,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # data 
     parser.add_argument('--data', type=str, default='data/ALL_expression.csv',help='Path of the bulk RNA-Seq expression profile')
-    parser.add_argument('--label', type=str, default='data/ALL_label_binary_wf.csv',help='Path of the processed bulk RNA-Seq drug screening annotation')
+    parser.add_argument('--label', type=str, default='data/TOTAL_label_binary_wf.csv',help='Path of the processed bulk RNA-Seq drug screening annotation')
     parser.add_argument('--result', type=str, default='saved/results/result_',help='Path of the training result report files')
-    parser.add_argument('--drug', type=str, default='I-BET-762',help='Name of the selected drug, should be a column name in the input file of --label')
+    parser.add_argument('--drug', type=str, default='I.BET.762',help='Name of the selected drug, should be a column name in the input file of --label')
     parser.add_argument('--missing_value', type=int, default=1,help='The value filled in the missing entry in the drug screening annotation, default: 1')
     parser.add_argument('--test_size', type=float, default=0.2,help='Size of the test set for the bulk model traning, default: 0.2')
     parser.add_argument('--valid_size', type=float, default=0.2,help='Size of the validation set for the bulk model traning, default: 0.2')

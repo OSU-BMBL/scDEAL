@@ -486,11 +486,11 @@ def run_main(args):
     # Read source data
     data_r=pd.read_csv(source_data_path,index_col=0)
     label_r=pd.read_csv(label_path,index_col=0)
-    label_r=label_r.fillna(na)
+    #label_r=label_r.fillna(na)
 
     # Extract labels
     ### Add by junyi 20220106
-    selected_idx = label_r.loc[:,select_drug]!=na
+    selected_idx = label_r.loc[:,select_drug].dropna()
     selected_idx = selected_idx.min(axis=1)
     ### Add by junyi 20220106
     label = label_r.loc[selected_idx.index,select_drug]

@@ -86,7 +86,7 @@ def run_main(args):
     # Read data
     data_r=pd.read_csv(data_path,index_col=0)
     label_r=pd.read_csv(label_path,index_col=0)
-    label_r=label_r.fillna(na)
+    #label_r=label_r.fillna(na)
     ut.save_arguments(args,now)
 
 
@@ -110,7 +110,7 @@ def run_main(args):
 
     # Filter out na values
     ### Add by junyi 20220106
-    selected_idx = label_r.loc[:,select_drug]!=na
+    selected_idx = label_r.loc[:,select_drug].dropna()
     selected_idx = selected_idx.min(axis=1)
     ### Add by junyi 20220106
 
