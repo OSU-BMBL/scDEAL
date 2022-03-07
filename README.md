@@ -42,9 +42,18 @@ The download time depends on the network speed of user. No extra compile or inst
 
 ## Data preparation
 ### Data download
-Please create a directory 'scDEAL/data/GSE110894' and store the data downloaded from the [data.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/Ea3i3US5UxNPimvCHSaW9fMB6R5Cfylg-9XbJ8GXefWudg) link inside:
+Please create download the zip format dataset from the [data.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/Ea3i3US5UxNPimvCHSaW9fMB6R5Cfylg-9XbJ8GXefWudg) link inside:
 
 [Click here to download data.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/Ea3i3US5UxNPimvCHSaW9fMB6R5Cfylg-9XbJ8GXefWudg) 
+
+The file "data.zip" includes all the datasets we have tested. Please extract the zip file and place it in the root directory of the scDEAL folder.
+|               |     Author             |     Drug         |     GEO access    |     Cells    |     Species           |     Cancer type                        |
+|---------------|------------------------|------------------|-------------------|--------------|-----------------------|----------------------------------------|
+|     Data 1&2  |     Sharma, et al.     |     Cisplatin    |     GSE117872     |     548      |     Homo   sapiens    |     Oral   squamous cell carcinomas    |
+|     Data 3    |     Kong, et al.       |     Gefitinib    |     GSE112274     |     507      |     Homo   sapiens    |     Lung   cancer                      |
+|     Data 4    |     Schnepp, et al.    |     Docetaxel    |     GSE140440     |     324      |     Homo   sapiens    |     Prostate   Cancer                  |
+|     Data 5    |     Aissa, et al.      |     Erlotinib    |     GSE149383     |     1496     |     Homo sapiens      |     Lung cancer                        |
+|     Data 6    |     Bell, et al.       |     I-BET-762    |     GSE110894     |     1419     |     Mus   musculus    |     Acute   myeloid leukemia           |
 
 The organization of the directory should be similar as follows:
 
@@ -59,9 +68,12 @@ scDEAL
 │   │   ALL_label_binary_wf.csv
 │   │   ...
 │   └───GSE110894
-│       │   GSE110894.csv
-│       │   GSE110894_CellInfo.xlsx
-│       │   ...
+│   |   │   GSE110894.csv
+│   |   │   GSE110894_CellInfo.xlsx
+│   |       ...
+│   └───GSE112274
+│   └───GSE116273
+│   |   ...
 └───saved
 │   │   
 |   └───logs

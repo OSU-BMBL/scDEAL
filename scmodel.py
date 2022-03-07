@@ -42,22 +42,11 @@ torch.backends.cudnn.benchmark=False
 
 DATA_MAP={
 "GSE117872":"data/GSE117872/GSE117872_good_Data_TPM.txt",
-"GSE117309":'data/GSE117309/filtered_gene_bc_matrices_HBCx-22/hg19/',
-"GSE117309_TAMR":'data/GSE117309/filtered_gene_bc_matrices_HBCx22-TAMR/hg19/',
-"GSE121107":'data/GSE121107/GSM3426289_untreated_out_gene_exon_tagged.dge.txt',
-"GSE121107_1H":'data/GSE121107/GSM3426290_entinostat_1hr_out_gene_exon_tagged.dge.txt',
-"GSE121107_6H":'data/GSE121107/GSM3426291_entinostat_6hr_out_gene_exon_tagged.dge.txt',
-"GSE111014":'data/GSE111014/',
 "GSE110894":"data/GSE110894/GSE110894.csv",
-"GSE122843":"data/GSE122843/GSE122843.txt",
 "GSE112274":"data/GSE112274/GSE112274_cell_gene_FPKM.csv",
-"GSE116237":"data/GSE116237/GSE116237_bulkRNAseq_expressionMatrix.txt",
-"GSE108383":"data/GSE108383/GSE108383_Melanoma_fluidigm.txt",
 "GSE140440":"data/GSE140440/GSE140440.csv",
-"GSE129730":"data/GSE129730/GSE129730.h5ad",
 "GSE149383":"data/GSE149383/erl_total_data_2K.csv",
 "GSE110894_small":"data/GSE110894/GSE110894_small.h5ad"
-
 }
 class TargetModel(nn.Module):
     def __init__(self, source_predcitor,target_encoder):
