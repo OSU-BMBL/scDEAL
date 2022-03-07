@@ -1,6 +1,10 @@
 # scDEAL documentation
 Deep Transfer Learning of Drug Sensitivity by Integrating Bulk and Single-cell RNA-seq data
 
+## News
+1. Added the function to use clustering label to help the transfer learning. Detailed are listed in the usage section.
+2. Migrate the source of testing data from the FTP to OneDrive.
+
 ## System requirements
 
 Following packages are required to run the program:
@@ -38,7 +42,7 @@ The download time depends on the network speed of user. No extra compile or inst
 
 ## Data preparation
 ### Data download
-Please create a directory 'scDEAL/data/GSE110894' and store the data downloaded from the [data.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/Ea3i3US5UxNPimvCHSaW9fMB6R5Cfylg-9XbJ8GXefWudg) link inside.:
+Please create a directory 'scDEAL/data/GSE110894' and store the data downloaded from the [data.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/Ea3i3US5UxNPimvCHSaW9fMB6R5Cfylg-9XbJ8GXefWudg) link inside:
 
 [Click here to download data.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/Ea3i3US5UxNPimvCHSaW9fMB6R5Cfylg-9XbJ8GXefWudg) 
 
