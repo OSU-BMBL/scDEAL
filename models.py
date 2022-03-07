@@ -2,11 +2,12 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from torch import Tensor
+import numpy as np
 
 #import scipy.io as sio
 from copy import deepcopy
-
-# Model of AE
+        
+        
 class AEBase(nn.Module):
     def __init__(self,
                  input_dim,
@@ -69,7 +70,8 @@ class AEBase(nn.Module):
         #     self.encoder,
         #     self.bottleneck
         # )            
-                    
+
+             
     def encode(self, input: Tensor):
         """
         Encodes the input by passing through the encoder network
@@ -92,7 +94,7 @@ class AEBase(nn.Module):
     def forward(self, input: Tensor, **kwargs):
         embedding = self.encode(input)
         output = self.decode(embedding)
-        return  output
+        return  output        
 
 # Model of Predictor
 class Predictor(nn.Module):
@@ -137,6 +139,9 @@ class Predictor(nn.Module):
         embedding = self.predictor(input)
         output = self.output(embedding)
         return  output
+        
+        
+        
     
 # Model of Pretrained P
 class PretrainedPredictor(AEBase):
@@ -189,6 +194,7 @@ class PretrainedPredictor(AEBase):
     def predict(self, embedding, **kwargs):
         output = self.predictor(embedding)
         return  output 
+     
 
 def vae_loss(recon_x, x, mu, logvar,reconstruction_function,weight=1):
     """
@@ -604,11 +610,21 @@ class PretrainedVAEPredictor(VAEBase):
         return  output
 
 class DaNN(nn.Module):
+    def __init__(self, source_model,target_model,fix_source=False):
+        super(DaNN, self).__init__()
+        self.source_model = source_model
+        if fix_source == True:
+            for p in self.parameters():
+                p.requires_grad = False
+                print("Layer weight is freezed:",format(p.shape))
+                # Stop until the bottleneck layer
+        self.target_model = target_model
+    '''
     def __init__(self, source_model,target_model):
         super(DaNN, self).__init__()
         self.source_model = source_model
         self.target_model = target_model
-
+    '''
     def forward(self, X_source, X_target,C_target=None):
      
         x_src_mmd = self.source_model.encode(X_source)

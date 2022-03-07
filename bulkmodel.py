@@ -3,7 +3,7 @@ import logging
 import sys
 import time
 import warnings
-
+import os
 import numpy as np
 import pandas as pd
 import torch
@@ -24,7 +24,20 @@ import utils as ut
 import trainers as t
 from models import (AEBase,PretrainedPredictor, PretrainedVAEPredictor, VAEBase)
 import matplotlib
-
+import random
+seed=42
+torch.manual_seed(seed)
+#np.random.seed(seed)
+torch.cuda.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
+#from transformers import *
+random.seed(seed)
+np.random.seed(seed)
+os.environ['PYTHONHASHSEED'] = str(seed)
+#torch.manual_seed(seed)
+#torch.cuda.manual_seed(seed)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark=False
 
 def run_main(args):
 
@@ -38,8 +51,6 @@ def run_main(args):
     test_size = args.test_size
     valid_size = args.valid_size
     g_disperson = args.var_genes_disp
-    model_path = args.bulk_model
-    bulk_encoder = args.bulk_encoder
     log_path = args.log
     batch_size = args.batch_size
     encoder_hdims = args.encoder_h_dims.split(",")
@@ -52,17 +63,28 @@ def run_main(args):
     preditor_hdims = list(map(int, preditor_hdims) )
     load_model = bool(args.load_source_model)
 
-    preditor_path = model_path + reduce_model  + select_drug + '.pkl'
+    
 
-
+    para = args.bulk+"_data_"+args.data_name+"_drug_"+args.drug+"_bottle_"+str(args.bottleneck)+"_edim_"+args.encoder_h_dims+"_pdim_"+args.predictor_h_dims+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+args.printgene+"_lr_"+str(args.lr)+"_mod_"+args.mod+"_sam_"+args.sampling
+    #(para)
+    now=time.strftime("%Y-%m-%d-%H-%M-%S")
+    
+    #print(preditor_path )
+    #model_path = args.bulk_model + para 
+    preditor_path = args.bulk_model + para 
+    bulk_encoder = args.bulk_encoder+para
     # Read data
     data_r=pd.read_csv(data_path,index_col=0)
     label_r=pd.read_csv(label_path,index_col=0)
+    if args.bulk == 'old':
+        data_r=data_r[0:805]
+        label_r=label_r[0:805]
+    elif args.bulk == 'new':
+        data_r=data_r[805:data_r.shape[0]]
+        label_r=label_r[805:label_r.shape[0]]        
+    else:
+        print("two databases combine")
     label_r=label_r.fillna(na)
-
-
-    now=time.strftime("%Y-%m-%d-%H-%M-%S")
-
     ut.save_arguments(args,now)
 
 
@@ -126,7 +148,7 @@ def run_main(args):
     X_train_all, X_test, Y_train_all, Y_test = train_test_split(data, label, test_size=test_size, random_state=42)
     X_train, X_valid, Y_train, Y_valid = train_test_split(X_train_all, Y_train_all, test_size=valid_size, random_state=42)
     # sampling method
-    if sampling == None:
+    if sampling == "no":
         X_train,Y_train=sam.nosampling(X_train,Y_train)
         logging.info("nosampling")
     elif sampling =="upsampling":
@@ -140,14 +162,15 @@ def run_main(args):
         logging.info("SMOTE")
     else:
         logging.info("not a legal sampling method")
-    
 
     # Select the Training device
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    #device = 'cpu'
+    #print(device)
     # Assuming that we are on a CUDA machine, this should print a CUDA device:
-    logging.info(device)
+    #logging.info(device)
     torch.cuda.set_device(device)
-
+    print(device)
     # Construct datasets and data loaders
     X_trainTensor = torch.FloatTensor(X_train).to(device)
     X_validTensor = torch.FloatTensor(X_valid).to(device)
@@ -169,22 +192,25 @@ def run_main(args):
 
     trainDataLoader_p = DataLoader(dataset=trainreducedDataset, batch_size=batch_size, shuffle=True)
     validDataLoader_p = DataLoader(dataset=validreducedDataset, batch_size=batch_size, shuffle=True)
-
+    bulk_X_allTensor = torch.FloatTensor(data).to(device)
+    bulk_Y_allTensor = torch.LongTensor(label).to(device)
     dataloaders_train = {'train':trainDataLoader_p,'val':validDataLoader_p}
-
+    print("bulk_X_allRensor",bulk_X_allTensor.shape)
     if(bool(args.pretrain)!=False):
         dataloaders_pretrain = {'train':X_trainDataLoader,'val':X_validDataLoader}
         if reduce_model == "VAE":
-            encoder = VAEBase(input_dim=data.shape[1],latent_dim=dim_au_out,h_dims=encoder_hdims)
-        else:
-            encoder = AEBase(input_dim=data.shape[1],latent_dim=dim_au_out,h_dims=encoder_hdims)
+            encoder = VAEBase(input_dim=data.shape[1],latent_dim=dim_au_out,h_dims=encoder_hdims,drop_out=args.dropout)
+        if reduce_model == 'AE':
+            encoder = AEBase(input_dim=data.shape[1],latent_dim=dim_au_out,h_dims=encoder_hdims,drop_out=args.dropout)
+        if reduce_model =='DAE':            
+            encoder = AEBase(input_dim=data.shape[1],latent_dim=dim_au_out,h_dims=encoder_hdims,drop_out=args.dropout)
         
-        if torch.cuda.is_available():
-            encoder.cuda()
+        #if torch.cuda.is_available():
+        #    encoder.cuda()
 
-        logging.info(encoder)
+        #logging.info(encoder)
         encoder.to(device)
-
+        #print(encoder)
         optimizer_e = optim.Adam(encoder.parameters(), lr=1e-2)
         loss_function_e = nn.MSELoss()
         exp_lr_scheduler_e = lr_scheduler.ReduceLROnPlateau(optimizer_e)
@@ -197,23 +223,32 @@ def run_main(args):
             encoder,loss_report_en = t.train_VAE_model(net=encoder,data_loaders=dataloaders_pretrain,
                             optimizer=optimizer_e,
                             n_epochs=epochs,scheduler=exp_lr_scheduler_e,save_path=bulk_encoder)
+        if reduce_model == "DAE":
+            encoder,loss_report_en = t.train_DAE_model(net=encoder,data_loaders=dataloaders_pretrain,
+                                        optimizer=optimizer_e,loss_function=loss_function_e,
+                                        n_epochs=epochs,scheduler=exp_lr_scheduler_e,save_path=bulk_encoder)                          
+                                    
         
-        logging.info("Pretrained finished")
+        #logging.info("Pretrained finished")
 
     # Defined the model of predictor 
     if reduce_model == "AE":
         model = PretrainedPredictor(input_dim=X_train.shape[1],latent_dim=dim_au_out,h_dims=encoder_hdims, 
                                 hidden_dims_predictor=preditor_hdims,output_dim=dim_model_out,
-                                pretrained_weights=bulk_encoder,freezed=bool(args.freeze_pretrain))
+                                pretrained_weights=bulk_encoder,freezed=bool(args.freeze_pretrain),drop_out=args.dropout,drop_out_predictor=args.dropout)
+    if reduce_model == "DAE":
+        model = PretrainedPredictor(input_dim=X_train.shape[1],latent_dim=dim_au_out,h_dims=encoder_hdims, 
+                                hidden_dims_predictor=preditor_hdims,output_dim=dim_model_out,
+                                pretrained_weights=bulk_encoder,freezed=bool(args.freeze_pretrain),drop_out=args.dropout,drop_out_predictor=args.dropout)                                
     elif reduce_model == "VAE":
         model = PretrainedVAEPredictor(input_dim=X_train.shape[1],latent_dim=dim_au_out,h_dims=encoder_hdims, 
                         hidden_dims_predictor=preditor_hdims,output_dim=dim_model_out,
-                        pretrained_weights=bulk_encoder,freezed=bool(args.freeze_pretrain),z_reparam=bool(args.VAErepram))
-
+                        pretrained_weights=bulk_encoder,freezed=bool(args.freeze_pretrain),z_reparam=bool(args.VAErepram),drop_out=args.dropout,drop_out_predictor=args.dropout)
+    #print("@@@@@@@@@@@")
     logging.info("Current model is:")
     logging.info(model)
-    if torch.cuda.is_available():
-        model.cuda()
+    #if torch.cuda.is_available():
+    #    model.cuda()
     model.to(device)
 
     # Define optimizer
@@ -225,8 +260,36 @@ def run_main(args):
     exp_lr_scheduler = lr_scheduler.ReduceLROnPlateau(optimizer)
 
     # Train prediction model
+    #print("1111")
     model,report = t.train_predictor_model(model,dataloaders_train,
                                             optimizer,loss_function,epochs,exp_lr_scheduler,load=load_model,save_path=preditor_path)
+    if (args.printgene=='T'):
+        import scanpypip.preprocessing as pp
+        bulk_adata = pp.read_sc_file(data_path)
+        #print('pp')
+        ## bulk test predict critical gene
+        import scanpy as sc
+        #import scanpypip.utils as uti
+        from captum.attr import IntegratedGradients
+        #bulk_adata = bulk_adata
+        #print(bulk_adata) 
+        bulk_pre = model(bulk_X_allTensor).detach().cpu().numpy()  
+        bulk_pre = bulk_pre.argmax(axis=1)
+        #print(model)
+        #print(bulk_pre.shape)
+        # Caculate integrated gradient
+        ig = IntegratedGradients(model)
+        
+        df_results_p = {}
+        target=1
+        attr, delta =  ig.attribute(bulk_X_allTensor,target=1, return_convergence_delta=True,internal_batch_size=batch_size)
+        
+        #attr, delta =  ig.attribute(bulk_X_allTensor,target=1, return_convergence_delta=True,internal_batch_size=batch_size)
+        attr = attr.detach().cpu().numpy()
+        
+        np.savetxt("ori_result/"+args.data_name+"bulk_gradient.txt",attr,delimiter = " ")
+        from pandas.core.frame import DataFrame
+        DataFrame(bulk_pre).to_csv("ori_result/"+args.data_name+"bulk_lab.csv")
     dl_result = model(X_testTensor).detach().cpu().numpy()
 
 
@@ -242,11 +305,11 @@ def run_main(args):
     report_df['auroc_score'] = auroc_score
     report_df['ap_score'] = ap_score
 
-    report_df.to_csv("saved/logs/" + reduce_model + select_drug+now + '_report.csv')
+    report_df.to_csv("save/logs/" + reduce_model + select_drug+now + '_report.csv')
 
-    logging.info(classification_report(Y_test, lb_results))
-    logging.info(average_precision_score(Y_test, pb_results))
-    logging.info(roc_auc_score(Y_test, pb_results))
+    #logging.info(classification_report(Y_test, lb_results))
+    #logging.info(average_precision_score(Y_test, pb_results))
+    #logging.info(roc_auc_score(Y_test, pb_results))
 
     model = DummyClassifier(strategy='stratified')
     model.fit(X_train, Y_train)
@@ -254,18 +317,18 @@ def run_main(args):
     naive_probs = yhat[:, 1]
 
     ut.plot_roc_curve(Y_test, naive_probs, pb_results, title=str(roc_auc_score(Y_test, pb_results)),
-                        path="saved/figures/" + reduce_model + select_drug+now + '_roc.pdf')
+                        path="save/figures/" + reduce_model + select_drug+now + '_roc.pdf')
     ut.plot_pr_curve(Y_test,pb_results,  title=average_precision_score(Y_test, pb_results),
-                    path="saved/figures/" + reduce_model + select_drug+now + '_prc.pdf')
-
+                    path="save/figures/" + reduce_model + select_drug+now + '_prc.pdf')
+    print("bulk_model finished")
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     # data 
-    parser.add_argument('--data', type=str, default='data/GDSC2_expression.csv',help='Path of the bulk RNA-Seq expression profile')
-    parser.add_argument('--label', type=str, default='data/GDSC2_label_9drugs_binary.csv',help='Path of the processed bulk RNA-Seq drug screening annotation')
-    parser.add_argument('--result', type=str, default='saved/results/result_',help='Path of the training result report files')
+    parser.add_argument('--data', type=str, default='data/ALL_expression.csv',help='Path of the bulk RNA-Seq expression profile')
+    parser.add_argument('--label', type=str, default='data/ALL_label_binary_wf.csv',help='Path of the processed bulk RNA-Seq drug screening annotation')
+    parser.add_argument('--result', type=str, default='save/results/result_',help='Path of the training result report files')
     parser.add_argument('--drug', type=str, default='I-BET-762',help='Name of the selected drug, should be a column name in the input file of --label')
     parser.add_argument('--missing_value', type=int, default=1,help='The value filled in the missing entry in the drug screening annotation, default: 1')
     parser.add_argument('--test_size', type=float, default=0.2,help='Size of the test set for the bulk model traning, default: 0.2')
@@ -277,7 +340,7 @@ if __name__ == '__main__':
     parser.add_argument('--PCA_dim', type=int, default=0,help='Number of components of PCA  reduction before training. If 0, no PCA will be performed. Default: 0')
 
     # trainv
-    parser.add_argument('--bulk_encoder','-e', type=str, default='saved/models/encoder_bulk.pkl',help='Path of the pre-trained encoder in the bulk level')
+    parser.add_argument('--bulk_encoder','-e', type=str, default='save/bulk_encoder/',help='Path of the pre-trained encoder in the bulk level')
     parser.add_argument('--pretrain', type=int, default=1,help='Whether to perform pre-training of the encoder. 0: do not pretraing, 1: pretrain. Default: 0')
     parser.add_argument('--lr', type=float, default=1e-2,help='Learning rate of model training. Default: 1e-2')
     parser.add_argument('--epochs', type=int, default=500,help='Number of epoches training. Default: 500')
@@ -290,11 +353,15 @@ if __name__ == '__main__':
     parser.add_argument('--predictor_h_dims', type=str, default="16,8",help='Shape of the predictor. Each number represent the number of neuron in a layer. \
                         Layers are seperated by a comma. Default: 16,8')
     parser.add_argument('--VAErepram', type=int, default=1)
-
+    parser.add_argument('--data_name', type=str, default="GSE110894",help='Accession id for testing data, only support pre-built data.')
     # misc
-    parser.add_argument('--bulk_model', '-p',  type=str, default='saved/models/predictor_bulk_',help='Path of the trained prediction model in the bulk level')
-    parser.add_argument('--log', '-l',  type=str, default='saved/logs/log',help='Path of training log')
+    parser.add_argument('--bulk_model', '-p',  type=str, default='save/bulk_pre/',help='Path of the trained prediction model in the bulk level')
+    parser.add_argument('--log', '-l',  type=str, default='save/logs/log',help='Path of training log')
     parser.add_argument('--load_source_model',  type=int, default=0,help='Load a trained bulk level or not. 0: do not load, 1: load. Default: 0')
+    parser.add_argument('--mod', type=str, default='new',help='heterogeneous')
+    parser.add_argument('--printgene', type=str, default='T',help='wether print critical gene')
+    parser.add_argument('--dropout', type=float, default=0.3,help='dropout')
+    parser.add_argument('--bulk', type=str, default='integrate',help='bulk database')
     warnings.filterwarnings("ignore")
 
     args, unknown = parser.parse_known_args()

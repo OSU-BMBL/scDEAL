@@ -229,7 +229,7 @@ def process_122843(adata,**kargs):
     return adata
 def process_110894(adata,**kargs):
     # Data specific preprocessing of cell info
-    file_name = 'data/GSE110894/GSE110894_CellInfo.xlsx' # change it to the name of your excel file
+    file_name = 'data/GSE110894_CellInfo.xlsx' # change it to the name of your excel file
     df_cellinfo = read_excel(file_name,header=3)
     df_cellinfo=df_cellinfo.dropna(how="all")
     df_cellinfo = df_cellinfo.fillna(method='pad')
@@ -332,7 +332,7 @@ def process_129730(adata,**kargs):
     
 def process_149383(adata,**kargs):
     # Data specific preprocessing of cell info
-    file_name = '../data/GSE149383/erl_total_2K_meta.csv' # change it to the name of your excel file
+    file_name = 'data/GSE149383/erl_total_2K_meta.csv' # change it to the name of your excel file
     df_cellinfo = pd.read_csv(file_name,header=None,index_col=0)
     sensitive = [int(row.find("res")==-1) for row in df_cellinfo.iloc[:,0]]
     adata.obs['sensitive'] = sensitive
@@ -476,3 +476,43 @@ def plot_loss(report,path="figures/loss.pdf",set_ylim=False):
     plt.close()
 
     return score_dict
+
+def integrated_gradient_differential(net,input,target,adata,n_genes=None,target_class=1,clip="abs",save_name="feature_gradients",ig_pval=0.05,ig_fc=1,method="wilcoxon",batch_size=100):
+        
+        # Caculate integrated gradient
+        ig = IntegratedGradients(net)
+
+        df_results = {}
+
+        attr, delta = ig.attribute(input,target=target_class, return_convergence_delta=True,internal_batch_size=batch_size)
+        attr = attr.detach().cpu().numpy()
+
+        if clip == 'positive':
+            attr = np.clip(attr,a_min=0,a_max=None)
+        elif clip == 'negative':
+            attr = abs(np.clip(attr,a_min=None,a_max=0))
+        else:
+            attr = abs(attr)
+
+        igadata= sc.AnnData(attr)
+        igadata.var.index = adata.var.index
+        igadata.obs.index = adata.obs.index
+
+        igadata.obs['sensitive'] = target
+        igadata.obs['sensitive'] = igadata.obs['sensitive'].astype('category')
+
+        sc.tl.rank_genes_groups(igadata, 'sensitive', method=method,n_genes=n_genes)
+
+        for label in [0,1]:
+
+            try:
+                df_degs = ut.get_de_dataframe(igadata,label)
+                df_degs = df_degs.loc[(df_degs.pvals_adj<ig_pval) & (df_degs.logfoldchanges>=ig_fc)]
+                df_degs.to_csv("saved/results/DIG_class_" +str(target_class)+"_"+str(label)+ save_name + '.csv')
+
+                df_results[label]= df_degs
+            except:
+                logging.warning("Only one class, no two calsses critical genes")
+
+        return adata,igadata,list(df_results[0].names),list(df_results[1].names)
+
