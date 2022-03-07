@@ -791,15 +791,15 @@ if __name__ == '__main__':
     parser.add_argument('--batch_id', type=str, default="HN137",help="Batch id only for testing")
     parser.add_argument('--load_sc_model', type=int, default=0,help='Load a trained model or not. 0: do not load, 1: load. Default: 0')
     
-    parser.add_argument('--mod', type=str, default='new',help='heterogeneous')
-    parser.add_argument('--printgene', type=str, default='T',help='wether print critical gene')
-    parser.add_argument('--dropout', type=float, default=0.3,help='dropout')
+    parser.add_argument('--mod', type=str, default='new',help='Embed the cell type label to regularized the training: new: add cell type info, ori: do not add cell type info. Default: new')
+    parser.add_argument('--printgene', type=str, default='T',help='Print the cirtical gene list: T: print. Default: T')
+    parser.add_argument('--dropout', type=float, default=0.3,help='Dropout of neural network. Default: 0.3')
     # miss
     parser.add_argument('--logging_file', '-l',  type=str, default='save/logs/transfer_',help='Path of training log')
     parser.add_argument('--sampling', type=str, default=None,help='Samping method of training data for the bulk model traning. \
                         Can be upsampling, downsampling, or SMOTE. default: None')
     parser.add_argument('--fix_source', type=int, default=0,help='Fix the bulk level model. Default: 0')
-    parser.add_argument('--bulk', type=str, default='integrate',help='bulk database')
+    parser.add_argument('--bulk', type=str, default='integrate',help='Selection of the bulk database.integrate:both dataset. old: GDSC. new: CCLE. Default: integrate')
     #
     args, unknown = parser.parse_known_args()
     run_main(args)
