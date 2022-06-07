@@ -11,6 +11,7 @@ saved/results
 saved/figures
 saved/adata
 saved/
+save/
 data/
 figures/
 ori_result/
@@ -139,3 +140,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+deg.csv
+figure2A_compareGSE112274.pdf
+figure2A_compareGSE117872_HN120.pdf
+figure2A_compareGSE117872_HN120.tiff
+figure2A_compareGSE117872_HN137.pdf
+figure2A_compareGSE117872_HN137.tiff
+figure2A_compareGSE140440.pdf
+figure2A_compareGSE149383.pdf
+logfc.csv

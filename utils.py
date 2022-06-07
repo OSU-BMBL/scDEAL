@@ -11,9 +11,6 @@ from scipy.stats import mannwhitneyu
 from sklearn.metrics import precision_recall_curve, roc_curve
 import scanpypip.utils as ut
 
-# Edit by junyi 20211217
-import glob
-
 def highly_variable_genes(data, 
     layer=None, n_top_genes=None, 
     min_disp=0.5, max_disp=np.inf, min_mean=0.0125, max_mean=3, 
@@ -123,6 +120,7 @@ def plot_pr_curve(test_y,model_probs,selected_label = 1,title="",path="figures/p
 
 
 def specific_process(adata,dataname="",**kargs):
+    adata.raw = adata
     if dataname =="GSE117872":
         select_origin = kargs['select_origin']
         adata = process_117872(adata,select_origin=select_origin)
@@ -161,14 +159,13 @@ def process_108383(adata,**kargs):
     adata.obs['sensitivity'] = sens_
 
     # Cluster de score
-    # Remove by junyi 20211217
-    # pval = 0.05
-    # n_genes = 50
-    # if "pval_thres" in kargs:
-    #     pval=kargs['pval_thres']
-    # if "num_de" in kargs:
-    #     n_genes = kargs['num_de']
-    # adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)
+    pval = 0.05
+    n_genes = 50
+    if "pval_thres" in kargs:
+        pval=kargs['pval_thres']
+    if "num_de" in kargs:
+        n_genes = kargs['num_de']
+    adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)
     return adata
 
 def process_117872(adata,**kargs):
@@ -184,7 +181,11 @@ def process_117872(adata,**kargs):
             selected=adata.obs['origin']==origin
             selected=selected.to_numpy('bool')
             adata = adata[selected, :]
-    
+    # 2022 0524 junyi
+    logging.info("adata shape:",adata.shape)
+    #adata=adata[adata.obs['cluster']!="Holiday"]
+    logging.info("Remove holiday shape:",adata.shape)
+
     sensitive = [int(row.find("Resistant")==-1) for row in adata.obs.loc[:,"cluster"]]
     sens_ = ['Resistant' if (row.find("Resistant")!=-1) else 'Sensitive' for row in adata.obs.loc[:,"cluster"]]
     #adata.obs.loc[adata.obs.cluster=="Holiday","cluster"] = "Sensitive"
@@ -192,15 +193,13 @@ def process_117872(adata,**kargs):
     adata.obs['sensitivity'] = sens_
 
     # Cluster de score
-    # Remove by junyi 20211217
-
-    # pval = 0.05
-    # n_genes = 50
-    # if "pval_thres" in kargs:
-    #     pval=kargs['pval_thres']
-    # if "num_de" in kargs:
-    #     n_genes = kargs['num_de']
-    # adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)
+    pval = 0.05
+    n_genes = 50
+    if "pval_thres" in kargs:
+        pval=kargs['pval_thres']
+    if "num_de" in kargs:
+        n_genes = kargs['num_de']
+    adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)
     return adata
 
 def process_122843(adata,**kargs):
@@ -251,15 +250,14 @@ def process_110894(adata,**kargs):
     sens_ = ['Resistant' if (row.find("RESISTANT")!=-1) else 'Sensitive' for row in obs_merge.loc[:,"Sample name"]]
     adata.obs['sensitivity'] = sens_
 
-    # Remove by junyi 20211217
 
-    # pval = 0.05
-    # n_genes = 50
-    # if "pval_thres" in kargs:
-    #     pval=kargs['pval_thres']
-    # if "num_de" in kargs:
-    #     n_genes = kargs['num_de']
-    # adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)    
+    pval = 0.05
+    n_genes = 50
+    if "pval_thres" in kargs:
+        pval=kargs['pval_thres']
+    if "num_de" in kargs:
+        n_genes = kargs['num_de']
+    adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)    
     return adata
 
 
@@ -278,15 +276,14 @@ def process_112274(adata,**kargs):
     sens_ = ['Resistant' if (row.find("parental")==-1) else 'Sensitive' for row in df_annotation.loc[:,"name_section_2"]]
     adata.obs['sensitivity'] = sens_
 
-    # Remove by junyi 20211217
 
-    # pval = 0.05
-    # n_genes = 50
-    # if "pval_thres" in kargs:
-    #     pval=kargs['pval_thres']
-    # if "num_de" in kargs:
-    #     n_genes = kargs['num_de']
-    # adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)    
+    pval = 0.05
+    n_genes = 50
+    if "pval_thres" in kargs:
+        pval=kargs['pval_thres']
+    if "num_de" in kargs:
+        n_genes = kargs['num_de']
+    adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)    
 
     return adata
 
@@ -309,15 +306,14 @@ def process_140440(adata,**kargs):
     sens_ = ['Resistant' if (row.find("Res")!=-1) else 'Sensitive' for row in df_cellinfo.iloc[:,0]]
     adata.obs['sensitivity'] = sens_
 
-    # Remove by junyi 20211217
 
-    # pval = 0.05
-    # n_genes = 50
-    # if "pval_thres" in kargs:
-    #     pval=kargs['pval_thres']
-    # if "num_de" in kargs:
-    #     n_genes = kargs['num_de']
-    # adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)    
+    pval = 0.05
+    n_genes = 50
+    if "pval_thres" in kargs:
+        pval=kargs['pval_thres']
+    if "num_de" in kargs:
+        n_genes = kargs['num_de']
+    adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)    
     return adata
 
 def process_129730(adata,**kargs):
@@ -329,15 +325,14 @@ def process_129730(adata,**kargs):
     sens_ = ['Resistant' if (row >9) else 'Sensitive' for row in adata.obs['sample'].astype(int)]
     adata.obs['sensitivity'] = sens_
 
-    # Remove by junyi 20211217
 
-    # pval = 0.05
-    # n_genes = 50
-    # if "pval_thres" in kargs:
-    #     pval=kargs['pval_thres']
-    # if "num_de" in kargs:
-    #     n_genes = kargs['num_de']
-    # adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)    
+    pval = 0.05
+    n_genes = 50
+    if "pval_thres" in kargs:
+        pval=kargs['pval_thres']
+    if "num_de" in kargs:
+        n_genes = kargs['num_de']
+    adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)    
     return adata
     
 def process_149383(adata,**kargs):
@@ -350,64 +345,15 @@ def process_149383(adata,**kargs):
     sens_ = ['Resistant' if (row.find("res")!=-1) else 'Sensitive' for row in df_cellinfo.iloc[:,0]]
     adata.obs['sensitivity'] = sens_
 
-    # Remove by junyi 20211217
 
-    # pval = 0.05
-    # n_genes = 50
-    # if "pval_thres" in kargs:
-    #     pval=kargs['pval_thres']
-    # if "num_de" in kargs:
-    #     n_genes = kargs['num_de']
-    # adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)    
+    pval = 0.05
+    n_genes = 50
+    if "pval_thres" in kargs:
+        pval=kargs['pval_thres']
+    if "num_de" in kargs:
+        n_genes = kargs['num_de']
+    adata = de_score(adata=adata,clustername="sensitivity",pval=pval,n=n_genes)    
     return adata
-
-## Edit by junyi 20211217
-def process_mix_seq(drug,expt,**kargs):
-    # Data specific preprocessing of cell info
-    treated_file_paths = glob.glob('data/10298696/'+drug+"*"+expt)
-    untreated_file_paths = glob.glob('data/10298696/DMSO*'+expt)+glob.glob('data/10298696/Untreated*'+expt)
-
-    file_paths = treated_file_paths+untreated_file_paths
-    adatas = []
-    
-    for f in file_paths:
-
-        # Read 10x
-        adata = sc.read_10x_mtx(f)
-        # Read meta file
-        meta_file_name = f+"/classifications.csv" # change it to the name of your excel file
-        df_cellinfo = pd.read_csv(meta_file_name,index_col=0)
-        # Get cells that have metea data
-        idx = adata.obs.index.intersection(df_cellinfo.index)
-        adata = adata[idx]
-        adata.obs = df_cellinfo.loc[idx,:]
-        # Add sensitive label
-        if(f in untreated_file_paths):
-            sensitive = 1
-            sens_ = 'Sensitive'
-        else:
-            sensitive = 0
-            sens_ = 'Resistant'
-
-        adata.obs['sensitive'] = sensitive
-        adata.obs['sensitivity'] = sens_
-        adatas.append(adata)
-    # Concat the data file
-    adata_cat = adatas[0].concatenate(adatas[1:])
-    adata_cat.raw = adata_cat    
-
-    # Add n_genes and pval and descore
-
-    # Remove by junyi 20211217
-
-    # pval = 0.05
-    # n_genes = 50
-    # if "pval_thres" in kargs:
-    #     pval=kargs['pval_thres']
-    # if "num_de" in kargs:
-    #     n_genes = kargs['num_de']
-    #adata_cat = de_score(adata=adata_cat,clustername="sensitivity",pval=pval,n=n_genes)    
-    return adata_cat
 
 def integrated_gradient_check(net,input,target,adata,n_genes,target_class=1,test_value="expression",save_name="feature_gradients",batch_size=100):
         ig = IntegratedGradients(net)
