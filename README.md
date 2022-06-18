@@ -162,7 +162,7 @@ python bulkmodel.py --drug [*Your selected drug*] --data [*Your own bulk level e
 
 python scmodel.py --sc_data [*Your own data path*] ... --printgene 'T'
 ```
-- casestudy/analysis_criticalgenes.ipynb: critical gene identification by integrated gradient matrix; 
+- [casestudy/analysis_criticalgenes.ipynb](casestudy/analysis_criticalgenes.ipynb): critical gene identification by integrated gradient matrix; 
 - casestudy/analysis_heatmap.ipynb: correlations analysis among critical gene expressions, trajectory, and gene scores; 
 - casestudy/analysis_parameters.ipynb: grid search result of hyper parameters;
 - casestudy/analysis_perturb.ipynb: replication results by random sampling of input data. 
