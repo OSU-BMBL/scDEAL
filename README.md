@@ -154,7 +154,8 @@ Formats for your own drug resistance table and your bulk level expression should
 For more detailed parameter settings of the two scripts, please refer to the documentation section.
 
 
-## * Case studies
+## * Appendix
+### * Appendix A: case studies
 The folder named "casestudy" contains Jupyter notebook templates of selected case studies in the paper. You can follow the introduction within each notebook to create analysis results for scDEAL. For example, run bulkmode.py with user-defined parameters:
 
 ```
@@ -163,12 +164,12 @@ python bulkmodel.py --drug [*Your selected drug*] --data [*Your own bulk level e
 python scmodel.py --sc_data [*Your own data path*] ... --printgene 'T'
 ```
 - [casestudy/analysis_criticalgenes.ipynb](casestudy/analysis_criticalgenes.ipynb): critical gene identification by integrated gradient matrix; 
-- casestudy/analysis_heatmap.ipynb: correlations analysis among critical gene expressions, trajectory, and gene scores; 
-- casestudy/analysis_parameters.ipynb: grid search result of hyper parameters;
-- casestudy/analysis_perturb.ipynb: replication results by random sampling of input data. 
-- casestudy/analysis_trained_bulk.ipynb: performance analysis of bulk level model. 
-- casestudy/analysis_trained_model.ipynb: transfer learning enmbedding analysis.
-- casestudy/analysis_tarined_anndata.ipynb: umap, gene score, and regression plot of single-cell level prediction.
+- [casestudy/analysis_heatmap.ipynb](casestudy/analysis_heatmap.ipynb): correlations analysis among critical gene expressions, trajectory, and gene scores; 
+- [casestudy/analysis_parameters.ipynb](casestudy/analysis_parameters.ipynb): grid search result of hyper parameters;
+- [casestudy/analysis_perturb.ipynb](casestudy/analysis_perturb.ipynb): replication results by random sampling of input data. 
+- [casestudy/analysis_trained_bulk.ipynb](casestudy/analysis_trained_bulk.ipynb): performance analysis of bulk level model. 
+- [casestudy/analysis_trained_model.ipynb](casestudy/analysis_trained_model.ipynb): transfer learning enmbedding analysis.
+- [casestudy/analysis_tarined_anndata.ipynb](casestudy/analysis_tarined_anndata.ipynb): umap, gene score, and regression plot of single-cell level prediction.
 
 ## Documentation
 * Command: python bulkmodel.py
