@@ -440,7 +440,10 @@ def integrated_gradient_differential(net,input,target,adata,n_genes=None,target_
         return adata,igadata,list(df_results[0].names),list(df_results[1].names)
 
 def de_score(adata,clustername,pval=0.05,n=50,method="wilcoxon",score_prefix=None):
-    sc.tl.rank_genes_groups(adata, clustername, method=method,use_raw=True)
+    try:
+        sc.tl.rank_genes_groups(adata, clustername, method=method,use_raw=True)
+    except:
+        sc.tl.rank_genes_groups(adata, clustername, method=method,use_raw=False)
     # Cluster de score
     for cluster in set(adata.obs[clustername]):
         df = ut.get_de_dataframe(adata,cluster)
