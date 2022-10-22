@@ -310,7 +310,7 @@ def run_main(args):
     load_model = bool(args.load_sc_model)
     mod = args.mod
     
-    para = args.bulk+"_data_"+args.sc_data+"_drug_"+args.drug+"_bottle_"+str(args.bottleneck)+"_edim_"+args.bulk_h_dims+"_pdim_"+args.predictor_h_dims+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+args.printgene+"_lr_"+str(args.lr)+"_mod_"+args.mod+"_sam_"+args.sampling
+    para = args.bulk+"_data_"+args.sc_data+"_drug_"+args.drug+"_bottle_"+str(args.bottleneck)+"_edim_"+args.bulk_h_dims+"_pdim_"+args.predictor_h_dims+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+str(args.printgene)+"_lr_"+str(args.lr)+"_mod_"+str(args.mod)+"_sam_"+str(args.sampling)
     source_data_path = args.bulk_data
     pretrain = args.pretrain+para
     source_model_path = args.bulk_model_path+para
@@ -376,7 +376,7 @@ def run_main(args):
     adata = pp.cal_ncount_ngenes(adata)
 
     #Preprocess data by filtering
-    if data_name not in ['GSE112274','GSE140440']:
+    if data_name not in ['GSE112274','GSE140440','GSE149383']:
         adata = pp.receipe_my(adata,l_n_genes=min_n_genes,r_n_genes=max_n_genes,filter_mincells=args.min_c,
                             filter_mingenes=args.min_g,normalize=True,log=True)
     else:
@@ -753,7 +753,7 @@ if __name__ == '__main__':
     # data 
     parser.add_argument('--bulk_data', type=str, default='data//ALL_expression.csv',help='Path of the bulk RNA-Seq expression profile')
     parser.add_argument('--label', type=str, default='data/ALL_label_binary_wf.csv',help='Path of the processed bulk RNA-Seq drug screening annotation')
-    parser.add_argument('--sc_data', type=str, default="GSE110894",help='Accession id for testing data, only support pre-built data.')
+    parser.add_argument('--sc_data', type=str, default="GSE149383",help='Accession id for testing data, only support pre-built data.')
     parser.add_argument('--drug', type=str, default='Cisplatin',help='Name of the selected drug, should be a column name in the input file of --label')
     parser.add_argument('--missing_value', type=int, default=1,help='The value filled in the missing entry in the drug screening annotation, default: 1')
     parser.add_argument('--test_size', type=float, default=0.2,help='Size of the test set for the bulk model traning, default: 0.2')
