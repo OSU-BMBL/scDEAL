@@ -365,7 +365,7 @@ def run_main(args):
     adata = pp.cal_ncount_ngenes(adata)
 
     #Preprocess data by filtering
-    if data_name not in ['GSE112274','GSE140440',"GSE149383"]:
+    if data_name not in ['GSE112274','GSE140440']:
         adata = pp.receipe_my(adata,l_n_genes=min_n_genes,r_n_genes=max_n_genes,filter_mincells=args.min_c,
                             filter_mingenes=args.min_g,normalize=True,log=True)
     else:
