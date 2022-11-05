@@ -65,8 +65,7 @@ def run_main(args):
 
     
 
-    para = args.bulk+"_data_"+args.data_name+"_drug_"+args.drug+"_bottle_"+str(args.bottleneck)+"_edim_"+args.encoder_h_dims+"_pdim_"+args.predictor_h_dims+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+args.printgene+"_lr_"+str(args.lr)+"_mod_"+args.mod+"_sam_"+args.sampling
-    #(para)
+    para = str(args.bulk)+"_data_"+str(args.data_name)+"_drug_"+str(args.drug)+"_bottle_"+str(args.bottleneck)+"_edim_"+str(args.encoder_h_dims)+"_pdim_"+str(args.predictor_h_dims)+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+str(args.printgene)+"_lr_"+str(args.lr)+"_mod_"+str(args.mod)+"_sam_"+str(args.sampling)    #(para)
     now=time.strftime("%Y-%m-%d-%H-%M-%S")
     
     #print(preditor_path )

@@ -299,7 +299,7 @@ def run_main(args):
     load_model = bool(args.load_sc_model)
     mod = args.mod
     
-    para = args.bulk+"_data_"+args.sc_data+"_drug_"+args.drug+"_bottle_"+str(args.bottleneck)+"_edim_"+args.bulk_h_dims+"_pdim_"+args.predictor_h_dims+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+str(args.printgene)+"_lr_"+str(args.lr)+"_mod_"+str(args.mod)+"_sam_"+str(args.sampling)
+    para = str(args.bulk)+"_data_"+str(args.sc_data)+"_drug_"+str(args.drug)+"_bottle_"+str(args.bottleneck)+"_edim_"+str(args.bulk_h_dims)+"_pdim_"+str(args.predictor_h_dims)+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+str(args.printgene)+"_lr_"+str(args.lr)+"_mod_"+str(args.mod)+"_sam_"+str(args.sampling)    
     source_data_path = args.bulk_data
     pretrain = args.pretrain+para
     source_model_path = args.bulk_model_path+para
