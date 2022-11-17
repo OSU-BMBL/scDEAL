@@ -75,7 +75,7 @@ scDEAL
 │   └───GSE140440
 │   └───GSE149383
 │   |   ...
-└───saved
+└───save
 │   │   
 |   └───logs
 │   │    ...
@@ -100,10 +100,10 @@ Folders in our package will store the corresponding contents:
 
 - root: python scripts to run the program and README.md
 - data: datasets required for the learning
-- saved/logs: log and error files that record running status. 
-- saved/figures & figures: figures generated through the run. 
-- saved/models: models trained through the run. 
-- saved/adata: results AnnData outputs.
+- save/logs: log and error files that record running status. 
+- save/figures & figures: figures generated through the run. 
+- save/models: models trained through the run. 
+- save/adata: results AnnData outputs.
 - DaNN: python scripts describe the model.
 - scanpypip: python scripts of utilities.
 
@@ -119,7 +119,7 @@ python bulkmodel.py --drug 'I-BET-762' --dimreduce 'AE' --encoder_h_dims "256,25
 
 ```
 
-This step takes the expression profile of bulk RNA-Seq and the drug response annotations as input. Iw will train a drug sensitivity predictor for the drug 'I-BET-762.' The output model will be stored in the directory "saved/models." The prefix of the model's file name will be 'bulk_predictor_ae_' and its full name will be dependent on parameters that users insert. In this case. The file name of the bulk model will be "bulk_predictor_AEI-BET-762.pkl". For all available drug names, please refer to the columns names of files: ALL_label_binary_wf.csv. 
+This step takes the expression profile of bulk RNA-Seq and the drug response annotations as input. Iw will train a drug sensitivity predictor for the drug 'I-BET-762.' The output model will be stored in the directory "save/models." The prefix of the model's file name will be 'bulk_predictor_ae_' and its full name will be dependent on parameters that users insert. In this case. The file name of the bulk model will be "bulk_predictor_AEI-BET-762.pkl". For all available drug names, please refer to the columns names of files: ALL_label_binary_wf.csv. 
 
 For the transfer learning, we provide a built-in testing case of acute myeloid leukemia cells [Bell et al.](https://doi.org/10.1038/s41467-019-10652-9) accessed from Gene Expression Omnibus (GEO) accession [GSE110894](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE110894). The training time for the cases are:  
 
@@ -135,7 +135,7 @@ This step trains the scDEAL model and predicts the sensitivity of I-BET-762 of t
 The training time of the test case including bulk-level and single-cell-level training on the testing computer was 4 minutes.
 
 ### Expected output
-The expected output format of scDEAL is the [AnnData](https://anndata.readthedocs.io/en/latest/anndata.AnnData.html) object (.h5ad) applied by the scanpy package. The file will be stored in the directory "scDEAL/saved/adata/data/". The prediction of sensitivity will be stored in adata.obs["sens_label"] (if you load your AnnDdata object named as adata) where 0 represents resistance and 1 represents sensitivity respectively. Further analysis for the output can be processed by the package [Scanpy](https://scanpy.readthedocs.io/en/stable/). The object can be loaded into python through the function: [scanpy.read_h5ad](https://scanpy.readthedocs.io/en/latest/generated/scanpy.read_h5ad.html#scanpy-read-h5ad). 
+The expected output format of scDEAL is the [AnnData](https://anndata.readthedocs.io/en/latest/anndata.AnnData.html) object (.h5ad) applied by the scanpy package. The file will be stored in the directory "scDEAL//adata/data/". The prediction of sensitivity will be stored in adata.obs["sens_label"] (if you load your AnnDdata object named as adata) where 0 represents resistance and 1 represents sensitivity respectively. Further analysis for the output can be processed by the package [Scanpy](https://scanpy.readthedocs.io/en/stable/). The object can be loaded into python through the function: [scanpy.read_h5ad](https://scanpy.readthedocs.io/en/latest/generated/scanpy.read_h5ad.html#scanpy-read-h5ad). 
 
 The expected output format of a successful run show includes:
 
@@ -144,7 +144,7 @@ scDEAL
 |   ...
 └───data
 │   │   ...
-└───saved
+└───save
 │   └───adata
 │   |    │
 │   |    └───data
