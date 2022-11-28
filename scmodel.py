@@ -458,8 +458,8 @@ def run_main(args):
 
     # Extract labels
     selected_idx = label_r.loc[:,select_drug]!=na
-    label = label_r.loc[selected_idx.index,select_drug]
-    data_r = data_r.loc[selected_idx.index,:]
+    label = label_r.loc[selected_idx,select_drug]
+    data_r = data_r.loc[selected_idx,:]
     label = label.values.reshape(-1,1)
 
 

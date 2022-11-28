@@ -113,9 +113,9 @@ def run_main(args):
         # Rename columns if duplication exist
         data_r.columns = adata.var_names
         # Extract hvgs
-        data = data_r.loc[selected_idx.index,hvg]
+        data = data_r.loc[selected_idx,hvg]
     else:
-        data = data_r.loc[selected_idx.index,:]
+        data = data_r.loc[selected_idx,:]
 
     # Do PCA if PCA_dim!=0
     if PCA_dim !=0 :
@@ -124,8 +124,8 @@ def run_main(args):
         data = data
         
     # Extract labels
-    label = label_r.loc[selected_idx.index,select_drug]
-    data_r = data_r.loc[selected_idx.index,:]
+    label = label_r.loc[selected_idx,select_drug]
+    data_r = data_r.loc[selected_idx,:]
 
     # Scaling data
     mmscaler = preprocessing.MinMaxScaler()
