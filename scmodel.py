@@ -465,8 +465,9 @@ def run_main(args):
         label_r=label_r[805:label_r.shape[0]]              
     else:
         print("two databases combine")
-    label_r=label_r.fillna(na)
+    #label_r=label_r.fillna(na)
 
+    select_drug=select_drug.upper()
     # Extract labels
     selected_idx = label_r.loc[:,select_drug]!=na
     label = label_r.loc[selected_idx.index,select_drug]
