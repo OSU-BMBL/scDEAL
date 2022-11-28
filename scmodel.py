@@ -276,7 +276,7 @@ def run_main(args):
     else:
         data_path = args.sc_data
     test_size = args.test_size
-    select_drug = args.drug
+    select_drug = args.drug.upper()
     freeze = args.freeze_pretrain
     valid_size = args.valid_size
     g_disperson = args.var_genes_disp
@@ -454,7 +454,7 @@ def run_main(args):
         label_r=label_r[805:label_r.shape[0]]              
     else:
         print("two databases combine")
-    label_r=label_r.fillna(na)
+    #label_r=label_r.fillna(na)
 
     # Extract labels
     selected_idx = label_r.loc[:,select_drug]!=na

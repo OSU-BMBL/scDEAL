@@ -1,8 +1,12 @@
 # scDEAL documentation
 Deep Transfer Learning of Drug Sensitivity by Integrating Bulk and Single-cell RNA-seq data
 
-## News
-1. Added the function to use clustering label to help the transfer learning. Detailed are listed in the usage section.
+## News 2022/11/28
+1. Fix the issues of na values filling when loading the drug labels in scmodel.py and bulkmodel.py
+2. Change the default directory to ./saved to ./save.
+
+## Previous News 
+1. Added the function to use clustering labels to help transfer learning. Details are listed in the usage section.
 2. Migrate the source of testing data from the FTP to OneDrive.
 
 ## System requirements
