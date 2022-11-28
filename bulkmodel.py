@@ -44,7 +44,7 @@ def run_main(args):
     # Extract parameters
     epochs = args.epochs
     dim_au_out = args.bottleneck #8, 16, 32, 64, 128, 256,512
-    select_drug = args.drug
+    select_drug = args.drug.upper()
     na = args.missing_value
     data_path = args.data
     label_path = args.label
@@ -84,7 +84,7 @@ def run_main(args):
         label_r=label_r[805:label_r.shape[0]]        
     else:
         print("two databases combine")
-    label_r=label_r.fillna(na)
+    #label_r=label_r.fillna(na)
     ut.save_arguments(args,now)
 
 
@@ -127,6 +127,7 @@ def run_main(args):
     # Extract labels
     label = label_r.loc[selected_idx.index,select_drug]
     data_r = data_r.loc[selected_idx.index,:]
+    label = label.values.reshape(-1,1)
 
     # Scaling data
     mmscaler = preprocessing.MinMaxScaler()

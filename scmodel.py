@@ -753,7 +753,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # data 
     parser.add_argument('--bulk_data', type=str, default='data//ALL_expression.csv',help='Path of the bulk RNA-Seq expression profile')
-    parser.add_argument('--label', type=str, default='data/ALL_label_binary_wf.csv',help='Path of the processed bulk RNA-Seq drug screening annotation')
+    parser.add_argument('--label', type=str, default='data/ALL_label_binary_08.csv',help='Path of the processed bulk RNA-Seq drug screening annotation')
     parser.add_argument('--sc_data', type=str, default="GSE149383",help='Accession id for testing data, only support pre-built data.')
     parser.add_argument('--drug', type=str, default='Cisplatin',help='Name of the selected drug, should be a column name in the input file of --label')
     parser.add_argument('--missing_value', type=int, default=1,help='The value filled in the missing entry in the drug screening annotation, default: 1')
