@@ -2,7 +2,7 @@
 Deep Transfer Learning of Drug Sensitivity by Integrating Bulk and Single-cell RNA-seq data
 
 ## News 2022/12/04
-1. [Add trained adata.h5ad objects for 6 data examples.](#appendix-b-trained-h5ad-files) 
+1. [Add trained adata.h5ad objects for 6 data examples.](### * Appendix B: trained .h5ad files) 
 
 ## News 2022/11/28
 1. Fix the issues of na values filling when loading the drug labels in scmodel.py and bulkmodel.py
