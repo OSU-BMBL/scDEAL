@@ -51,7 +51,7 @@ def save_arguments(args,now):
         args_dict[items[0]] = items[1]
 
     args_df = pd.DataFrame(args_dict,index=[now]).T
-    args_df.to_csv("saved/logs/arguments_" +now + '.csv')
+    args_df.to_csv("save/logs/arguments_" +now + '.csv')
 
     return args_df
 
@@ -395,8 +395,8 @@ def integrated_gradient_check(net,input,target,adata,n_genes,target_class=1,test
         df_top_genes['pval']=top_pvals
         df_tail_genes['pval']=tail_pvals
 
-        df_top_genes.to_csv("saved/results/top_genes_class" +str(target_class)+ save_name + '.csv')
-        df_tail_genes.to_csv("saved/results/top_genes_class" +str(target_class)+ save_name + '.csv')
+        df_top_genes.to_csv("save/results/top_genes_class" +str(target_class)+ save_name + '.csv')
+        df_tail_genes.to_csv("save/results/top_genes_class" +str(target_class)+ save_name + '.csv')
 
         return adata,attr,df_top_genes,df_tail_genes
 
@@ -431,7 +431,7 @@ def integrated_gradient_differential(net,input,target,adata,n_genes=None,target_
             try:
                 df_degs = ut.get_de_dataframe(igadata,label)
                 df_degs = df_degs.loc[(df_degs.pvals_adj<ig_pval) & (df_degs.logfoldchanges>=ig_fc)]
-                df_degs.to_csv("saved/results/DIG_class_" +str(target_class)+"_"+str(label)+ save_name + '.csv')
+                df_degs.to_csv("save/results/DIG_class_" +str(target_class)+"_"+str(label)+ save_name + '.csv')
 
                 df_results[label]= df_degs
             except:
@@ -511,7 +511,7 @@ def integrated_gradient_differential(net,input,target,adata,n_genes=None,target_
             try:
                 df_degs = ut.get_de_dataframe(igadata,label)
                 df_degs = df_degs.loc[(df_degs.pvals_adj<ig_pval) & (df_degs.logfoldchanges>=ig_fc)]
-                df_degs.to_csv("saved/results/DIG_class_" +str(target_class)+"_"+str(label)+ save_name + '.csv')
+                df_degs.to_csv("save/results/DIG_class_" +str(target_class)+"_"+str(label)+ save_name + '.csv')
 
                 df_results[label]= df_degs
             except:

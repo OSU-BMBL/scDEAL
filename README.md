@@ -1,6 +1,9 @@
 # scDEAL documentation
 Deep Transfer Learning of Drug Sensitivity by Integrating Bulk and Single-cell RNA-seq data
 
+## News 2022/12/04
+1. [Add trained adata.h5ad objects for 6 data examples.](#appendix-b-trained-h5ad-files) 
+
 ## News 2022/11/28
 1. Fix the issues of na values filling when loading the drug labels in scmodel.py and bulkmodel.py
 2. Change the default directory to ./saved to ./save.
@@ -187,6 +190,13 @@ python scmodel.py --sc_data [*Your own data path*] ... --printgene 'T'
 ```
 - [casestudy/analysis_criticalgenes.ipynb](casestudy/analysis_criticalgenes.ipynb): critical gene identification by integrated gradient matrix; 
 - [casestudy/analysis_tarined_anndata.ipynb](casestudy/analysis_tarined_anndata.ipynb): umap, gene score, and regression plot of single-cell level prediction.
+
+
+### * Appendix B: trained .h5ad files
+Trained results as scanpy h5ad objects for the example datasets are provided as follows:
+- [adata.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EYru-LaQC1tHlFZSnf1RA_cBjXwIafy-iDsajEWjh8xcjA?e=2sE61e)
+
+
 
 ## Documentation
 * Command: python bulkmodel.py
