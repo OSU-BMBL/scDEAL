@@ -21,6 +21,7 @@ The following packages are required to run the program:
 - sklearn 0.23.0
 - imblearn 0.7.0
 - scanpy 1.6.0
+- captum 0.4.1
 
 This software is developed and tested in the following software environment:
 ```
