@@ -163,8 +163,10 @@ def run_main(args):
         logging.info("not a legal sampling method")
 
     # Select the Training device
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    #device = 'cpu'
+    if(args.device == "gpu"):
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    else:
+        device = 'cpu'
     #print(device)
     # Assuming that we are on a CUDA machine, this should print a CUDA device:
     #logging.info(device)
@@ -339,6 +341,7 @@ if __name__ == '__main__':
     parser.add_argument('--PCA_dim', type=int, default=0,help='Number of components of PCA  reduction before training. If 0, no PCA will be performed. Default: 0')
 
     # trainv
+    parser.add_argument('--device', type=str, default="cpu",help='Device to train the model. Can be cpu or gpu. Deafult: cpu')
     parser.add_argument('--bulk_encoder','-e', type=str, default='save/bulk_encoder/',help='Path of the pre-trained encoder in the bulk level')
     parser.add_argument('--pretrain', type=int, default=1,help='Whether to perform pre-training of the encoder. 0: do not pretraing, 1: pretrain. Default: 0')
     parser.add_argument('--lr', type=float, default=1e-2,help='Learning rate of model training. Default: 1e-2')

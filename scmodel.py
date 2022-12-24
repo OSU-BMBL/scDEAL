@@ -413,8 +413,10 @@ def run_main(args):
 
 
     # Select the device of gpu
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    #device = "cpu"
+    if(args.device == "gpu"):
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    else:
+        device = 'cpu'
     # Assuming that we are on a CUDA machine, this should print a CUDA device:
     #logging.info(device)
     print(device)
@@ -760,6 +762,7 @@ if __name__ == '__main__':
     parser.add_argument('--mmd_GAMMA', type=int, default=1000,help="Gamma parameter in the kernel of the MMD loss of the transfer learning, default: 1000")
 
     # train
+    parser.add_argument('--device', type=str, default="cpu",help='Device to train the model. Can be cpu or gpu. Deafult: cpu')
     parser.add_argument('--bulk_model_path','-s', type=str, default='save/bulk_pre/',help='Path of the trained predictor in the bulk level')
     parser.add_argument('--sc_model_path', '-p',  type=str, default='save/sc_pre/',help='Path (prefix) of the trained predictor in the single cell level')
     parser.add_argument('--pretrain', type=str, default='save/sc_encoder/',help='Path of the pre-trained encoder in the single-cell level')
