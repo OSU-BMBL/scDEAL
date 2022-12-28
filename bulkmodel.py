@@ -67,6 +67,13 @@ def run_main(args):
 
     para = str(args.bulk)+"_data_"+str(args.data_name)+"_drug_"+str(args.drug)+"_bottle_"+str(args.bottleneck)+"_edim_"+str(args.encoder_h_dims)+"_pdim_"+str(args.predictor_h_dims)+"_model_"+reduce_model+"_dropout_"+str(args.dropout)+"_gene_"+str(args.printgene)+"_lr_"+str(args.lr)+"_mod_"+str(args.mod)+"_sam_"+str(args.sampling)    #(para)
     now=time.strftime("%Y-%m-%d-%H-%M-%S")
+
+
+    for path in [args.log,args.bulk_model,args.bulk_encoder]:
+        if not os.path.exists(path):
+            # Create a new directory because it does not exist
+            os.makedirs(path)
+            print("The new directory is created!")
     
     #print(preditor_path )
     #model_path = args.bulk_model + para 
@@ -88,8 +95,8 @@ def run_main(args):
 
 
     # Initialize logging and std out
-    out_path = log_path+now+".err"
-    log_path = log_path+now+".log"
+    out_path = log_path+now+"bulk.err"
+    log_path = log_path+now+"bulk.log"
 
     out=open(out_path,"w")
     sys.stderr=out
@@ -165,12 +172,13 @@ def run_main(args):
     # Select the Training device
     if(args.device == "gpu"):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        torch.cuda.set_device(device)
+
     else:
         device = 'cpu'
     #print(device)
     # Assuming that we are on a CUDA machine, this should print a CUDA device:
     #logging.info(device)
-    torch.cuda.set_device(device)
     print(device)
     # Construct datasets and data loaders
     X_trainTensor = torch.FloatTensor(X_train).to(device)
@@ -358,7 +366,7 @@ if __name__ == '__main__':
     parser.add_argument('--data_name', type=str, default="GSE110894",help='Accession id for testing data, only support pre-built data.')
     # misc
     parser.add_argument('--bulk_model', '-p',  type=str, default='save/bulk_pre/',help='Path of the trained prediction model in the bulk level')
-    parser.add_argument('--log', '-l',  type=str, default='save/logs/log',help='Path of training log')
+    parser.add_argument('--log', '-l',  type=str, default='save/logs/',help='Path of training log')
     parser.add_argument('--load_source_model',  type=int, default=0,help='Load a trained bulk level or not. 0: do not load, 1: load. Default: 0')
     parser.add_argument('--mod', type=str, default='new',help='Embed the cell type label to regularized the training: new: add cell type info, ori: do not add cell type info. Default: new')
     parser.add_argument('--printgene', type=str, default='T',help='Print the cirtical gene list: T: print. Default: T')

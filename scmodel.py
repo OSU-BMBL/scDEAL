@@ -310,8 +310,8 @@ def run_main(args):
     # Misc
     now=time.strftime("%Y-%m-%d-%H-%M-%S")
     # Initialize logging and std out
-    out_path = log_path+now+".err"
-    log_path = log_path+now+".log"
+    out_path = log_path+now+"transfer.err"
+    log_path = log_path+now+"transfer.log"
 
     out=open(out_path,"w")
     sys.stderr=out
@@ -327,6 +327,12 @@ def run_main(args):
     logging.info(args)
     logging.info("Start at " + str(t0))
 
+    
+    for path in [args.logging_file,args.bulk_model_path,args.sc_model_path,args.pretrain,"save/adata/"]:
+        if not os.path.exists(path):
+            # Create a new directory because it does not exist
+            os.makedirs(path)
+            print("The new directory is created!")
     
     # Save arguments
     args_df = ut.save_arguments(args,now)
@@ -415,12 +421,13 @@ def run_main(args):
     # Select the device of gpu
     if(args.device == "gpu"):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        torch.cuda.set_device(device)
+
     else:
         device = 'cpu'
     # Assuming that we are on a CUDA machine, this should print a CUDA device:
     #logging.info(device)
     print(device)
-    torch.cuda.set_device(device)
 
     # Construct datasets and data loaders
     Xtarget_trainTensor = torch.FloatTensor(Xtarget_train).to(device)
@@ -742,10 +749,10 @@ def run_main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # data 
-    parser.add_argument('--bulk_data', type=str, default='data//ALL_expression.csv',help='Path of the bulk RNA-Seq expression profile')
+    parser.add_argument('--bulk_data', type=str, default='data/ALL_expression.csv',help='Path of the bulk RNA-Seq expression profile')
     parser.add_argument('--label', type=str, default='data/ALL_label_binary_wf.csv',help='Path of the processed bulk RNA-Seq drug screening annotation')
     parser.add_argument('--sc_data', type=str, default="GSE110894",help='Accession id for testing data, only support pre-built data.')
-    parser.add_argument('--drug', type=str, default='Cisplatin',help='Name of the selected drug, should be a column name in the input file of --label')
+    parser.add_argument('--drug', type=str, default='I-BET-762',help='Name of the selected drug, should be a column name in the input file of --label')
     parser.add_argument('--missing_value', type=int, default=1,help='The value filled in the missing entry in the drug screening annotation, default: 1')
     parser.add_argument('--test_size', type=float, default=0.2,help='Size of the test set for the bulk model traning, default: 0.2')
     parser.add_argument('--valid_size', type=float, default=0.2,help='Size of the validation set for the bulk model traning, default: 0.2')
@@ -787,7 +794,7 @@ if __name__ == '__main__':
     parser.add_argument('--printgene', type=str, default='T',help='Print the cirtical gene list: T: print. Default: T')
     parser.add_argument('--dropout', type=float, default=0.3,help='Dropout of neural network. Default: 0.3')
     # miss
-    parser.add_argument('--logging_file', '-l',  type=str, default='save/logs/transfer_',help='Path of training log')
+    parser.add_argument('--logging_file', '-l',  type=str, default='save/logs/',help='Path of training log')
     parser.add_argument('--sampling', type=str, default=None,help='Samping method of training data for the bulk model traning. \
                         Can be upsampling, downsampling, or SMOTE. default: None')
     parser.add_argument('--fix_source', type=int, default=0,help='Fix the bulk level model. Default: 0')
