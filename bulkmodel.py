@@ -90,7 +90,7 @@ def run_main(args):
         label_r=label_r[805:label_r.shape[0]]        
     else:
         print("two databases combine")
-    #label_r=label_r.fillna(na)
+    label_r=label_r.fillna(na)
     ut.save_arguments(args,now)
 
 
