@@ -191,7 +191,10 @@ def train_DaNN_model2(net,source_loader,target_loader,
                         s = 1-s
                         loss_s += np.sum(np.triu(s,1))/((s.shape[0]*s.shape[0])*2-s.shape[0])
                     #loss_s = torch.tensor(loss_s).cuda()
-                    loss_s = torch.tensor(loss_s).cuda()
+                    if(args.device=="cuda"):
+                        loss_s = torch.tensor(loss_s).cuda()
+                    elif(args.device=="cpu"):
+                        loss_s = torch.tensor(loss_s).cpu()
                     loss_s.requires_grad_(True)
                     loss_c = loss_function(y_pre, y_src)      
                     loss_mmd = dist_loss(x_src_mmd, x_tar_mmd)

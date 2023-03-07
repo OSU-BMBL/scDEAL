@@ -69,7 +69,7 @@ def run_main(args):
     now=time.strftime("%Y-%m-%d-%H-%M-%S")
 
 
-    for path in [args.log,args.bulk_model,args.bulk_encoder]:
+    for path in [args.log,args.bulk_model,args.bulk_encoder,'save/ori_result','save/figures']:
         if not os.path.exists(path):
             # Create a new directory because it does not exist
             os.makedirs(path)
@@ -344,8 +344,8 @@ if __name__ == '__main__':
     parser.add_argument('--valid_size', type=float, default=0.2,help='Size of the validation set for the bulk model traning, default: 0.2')
     parser.add_argument('--var_genes_disp', type=float, default=None,help='Dispersion of highly variable genes selection when pre-processing the data. \
                          If None, all genes will be selected .default: None')
-    parser.add_argument('--sampling', type=str, default=None,help='Samping method of training data for the bulk model traning. \
-                        Can be upsampling, downsampling, or SMOTE. default: None')
+    parser.add_argument('--sampling', type=str, default='SMOTE',help='Samping method of training data for the bulk model traning. \
+                        Can be upsampling, downsampling, or SMOTE. default: SMOTE')
     parser.add_argument('--PCA_dim', type=int, default=0,help='Number of components of PCA  reduction before training. If 0, no PCA will be performed. Default: 0')
 
     # trainv
