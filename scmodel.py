@@ -193,7 +193,7 @@ def train_DaNN_model2(net,source_loader,target_loader,
                     #loss_s = torch.tensor(loss_s).cuda()
                     if(args.device=="cuda"):
                         loss_s = torch.tensor(loss_s).cuda()
-                    elif(args.device=="cpu"):
+                    else:
                         loss_s = torch.tensor(loss_s).cpu()
                     loss_s.requires_grad_(True)
                     loss_c = loss_function(y_pre, y_src)      
