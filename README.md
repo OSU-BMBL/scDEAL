@@ -1,12 +1,14 @@
 # scDEAL documentation
 Deep Transfer Learning of Drug Sensitivity by Integrating Bulk and Single-cell RNA-seq data
 
+## News 2023/03/07
+Multiple package versions changed and therefore the results shown in the article cannot be fully replicated, but we provide the full result information (embedding, sensitive score and so on) for all of our data, stored in the adata format. These results can be downloaded from [here](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EYru-LaQC1tHlFZSnf1RA_cBjXwIafy-iDsajEWjh8xcjA?e=2sE61e).   
+Now, we are re-tunning parameters based on the current version environment and we will show the results on GitHub. 
+This update provides all the shell files to help you repeat all the results .
+
 ## News 2022/12/04
 1. Add trained adata.h5ad objects for 6 data examples.
 
-## News 2022/11/28
-1. Fix the issues of na values filling when loading the drug labels in scmodel.py and bulkmodel.py
-2. Change the default directory to ./saved to ./save.
 
 ## Previous News 
 1. Added the function to use clustering labels to help transfer learning. Details are listed in the usage section.
