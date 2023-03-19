@@ -131,7 +131,7 @@ For resuming training, you can use the --checkpoint option of bulkmodel.py and s
 For example, run bulkmode.py with user-defined parameters:
 
 ```
-source scDEAL/bin/activate
+source scDEALenv/bin/activate
 python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling"
 
 ```
@@ -187,8 +187,8 @@ scDEAL
 For your input count matrix, you can replace the --sc_data option with your data path as follows:
 
 ```
+source scDEALenv/bin/activate
 python bulkmodel.py --drug [*Your selected drug*] --data [*Your own bulk level expression*] --label [*Your own bulk level drug resistance table*] ...
-
 python scmodel.py --sc_data [*Your own data path*] ...
 ```
 
