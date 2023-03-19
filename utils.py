@@ -229,7 +229,7 @@ def process_122843(adata,**kargs):
     return adata
 def process_110894(adata,**kargs):
     # Data specific preprocessing of cell info
-    file_name = 'data/GSE110894_CellInfo.xlsx' # change it to the name of your excel file
+    file_name = 'data/GSE110894/GSE110894_CellInfo.xlsx' # change it to the name of your excel file
     df_cellinfo = read_excel(file_name,header=3)
     df_cellinfo=df_cellinfo.dropna(how="all")
     df_cellinfo = df_cellinfo.fillna(method='pad')

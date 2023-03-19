@@ -9,6 +9,13 @@ from torch import nn
 from tqdm import tqdm
 
 from models import vae_loss
+from sklearn.metrics.pairwise import cosine_similarity
+### loss2
+import copy
+
+from scipy.spatial import distance_matrix, minkowski_distance, distance
+import networkx as nx
+from igraph import *
 
 
 
@@ -556,88 +563,6 @@ def train_ADDA_model(
     
     return discriminator,target_encoder, loss_train, loss_d_train
 
-    '''
-    GAE embedding for clustering
-    Param:
-        z,adj
-    Return:
-        Embedding from graph
-    '''
-    if(load!=False):
-        model.load_state_dict(torch.load(save_path))           
-        return model, 0
-    
-    # featrues from z
-    # Louvain
-
-    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-    # features = z
-
-    # features = torch.FloatTensor(features).to(device)
-
-    # Store original adjacency matrix (without diagonal entries) for later
-
-    #adj_train, train_edges, val_edges, val_edges_false, test_edges, test_edges_false = mask_test_edges(adj)
-    #adj = adj_train
-
-    # Some preprocessing
-    #adj_norm = preprocess_graph(adj)
-
-    if precisionModel == 'Double':
-        model=model.double()
-
-    #adj_norm = torch.FloatTensor(adj_norm)
-    #adj_norm.to(device)
-    
-    best_loss = np.inf
-
-    for epoch in tqdm(range(n_epochs)):
-        # mem=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-        # print('Mem consumption before training: '+str(mem))
-
-        for phase in ['train', 'val']:
-            if phase == 'train':
-                #optimizer = scheduler(optimizer, epoch)
-                model.train()  # Set model to training mode
-            else:
-                model.eval()  # Set model to evaluate mode
-
-            optimizer.zero_grad()
-            result = model(z[phase], adj[phase])
-
-            loss = loss_function(result,y[phase])
-            cur_loss = loss.item()
-
-
-            if phase == 'train':
-                loss.backward()
-                optimizer.step()
-                scheduler.step(cur_loss)
-            
-            last_lr = scheduler.optimizer.param_groups[0]['lr']
-            ap_curr = 0
-
-
-            logging.info("Epoch: {}, Phase: {}, loss_gae={:.5f}, lr={:.5f}".format(
-                epoch + 1,phase, cur_loss, last_lr))
-
-            if phase == 'val' and cur_loss < best_loss:
-                best_loss = cur_loss
-                best_model_wts = copy.deepcopy(model.state_dict())
-
-
-    logging.info("Optimization Finished!")
-
-    #roc_score, ap_score = get_roc_score(hidden_emb, adj_orig, test_edges, test_edges_false)
-    #logging.info('Test ROC score: ' + str(roc_score))
-    #logging.info('Test AP score: ' + str(ap_score))
-    model.load_state_dict(best_model_wts)           
-    torch.save(model.state_dict(), save_path)
-
- 
-    return model,0
-
 def train_DaNN_model(net,source_loader,target_loader,
                     optimizer,loss_function,n_epochs,scheduler,dist_loss,weight=0.25,GAMMA=1000,epoch_tail=0.90,
                     load=False,save_path="saved/model.pkl",best_model_cache = "drive",top_models=5):
@@ -767,3 +692,199 @@ def train_DaNN_model(net,source_loader,target_loader,
         torch.save(net.state_dict(), save_path)
 
     return net, [loss_train,mmd_train]
+
+def calculateKNNgraphDistanceMatrix(featureMatrix, distanceType='euclidean', k=10):
+    distMat = distance.cdist(featureMatrix,featureMatrix, distanceType)
+        #print(distMat)
+    edgeList=[]
+    
+    for i in np.arange(distMat.shape[0]):
+        res = distMat[:,i].argsort()[:k]
+        for j in np.arange(k):
+            edgeList.append((i,res[j],distMat[i,j]))
+    
+    return edgeList
+
+def generateLouvainCluster(edgeList):
+   
+    """
+    Louvain Clustering using igraph
+    """
+    Gtmp = nx.Graph()
+    Gtmp.add_weighted_edges_from(edgeList)
+    W = nx.adjacency_matrix(Gtmp)
+    W = W.todense()
+    graph = Graph.Weighted_Adjacency(
+        W.tolist(), mode=ADJ_UNDIRECTED, attr="weight", loops=False)
+    louvain_partition = graph.community_multilevel(
+        weights=graph.es['weight'], return_levels=False)
+    size = len(louvain_partition)
+    hdict = {}
+    count = 0
+    for i in range(size):
+        tlist = louvain_partition[i]
+        for j in range(len(tlist)):
+            hdict[tlist[j]] = i
+            count += 1
+
+    listResult = []
+    for i in range(count):
+        listResult.append(hdict[i])
+
+    return listResult, size
+    
+
+def train_DaNN_model2(net,source_loader,target_loader,
+                    optimizer,loss_function,n_epochs,scheduler,dist_loss,weight=0.25,GAMMA=1000,epoch_tail=0.90,
+                    load=False,save_path="save/model.pkl",best_model_cache = "drive",top_models=5,k=10,device="cuda"):
+
+    if(load!=False):
+        if(os.path.exists(save_path)):
+            try:
+                net.load_state_dict(torch.load(save_path))           
+                return net, 0,0,0
+            except:
+                logging.warning("Failed to load existing file, proceed to the trainning process.")
+
+        else:
+            logging.warning("Failed to load existing file, proceed to the trainning process.")
+    
+    dataset_sizes = {x: source_loader[x].dataset.tensors[0].shape[0] for x in ['train', 'val']}
+    loss_train = {}
+    mmd_train = {}
+    sc_train = {}
+    best_model_wts = copy.deepcopy(net.state_dict())
+    best_loss = np.inf
+
+
+    g_tar_outputs = []
+    g_src_outputs = []
+
+    for epoch in range(n_epochs):
+        logging.info('Epoch {}/{}'.format(epoch, n_epochs - 1))
+        logging.info('-' * 10)
+
+
+        # Each epoch has a training and validation phase
+        for phase in ['train', 'val']:
+            if phase == 'train':
+                #optimizer = scheduler(optimizer, epoch)
+                net.train()  # Set model to training mode
+            else:
+                net.eval()  # Set model to evaluate mode
+
+            running_loss = 0.0
+            running_mmd = 0.0
+            running_sc =0.0
+            
+            batch_j = 0
+            list_src, list_tar = list(enumerate(source_loader[phase])), list(enumerate(target_loader[phase]))
+            n_iters = max(len(source_loader[phase]), len(target_loader[phase]))
+
+            for batchidx, (x_src, y_src) in enumerate(source_loader[phase]):
+                _, (x_tar, y_tar) = list_tar[batch_j]
+                
+                x_tar.requires_grad_(True)
+                x_src.requires_grad_(True)
+
+                min_size = min(x_src.shape[0],x_tar.shape[0])
+
+                if (x_src.shape[0]!=x_tar.shape[0]):
+                    x_src = x_src[:min_size,]
+                    y_src = y_src[:min_size,]
+                    x_tar = x_tar[:min_size,]
+                    y_tar = y_tar[:min_size,]
+
+                #x.requires_grad_(True)
+                # encode and decode 
+                
+                
+                
+                if(net.target_model._get_name()=="CVAEBase"):
+                    y_pre, x_src_mmd, x_tar_mmd = net(x_src, x_tar,y_tar)
+                else:
+                    y_pre, x_src_mmd, x_tar_mmd = net(x_src, x_tar)
+                # compute loss
+                encoderrep = net.target_model.encoder(x_tar)
+                #print(x_tar.shape)
+                if encoderrep.shape[0]<k:
+                    next
+                else:    
+                    edgeList = calculateKNNgraphDistanceMatrix(encoderrep.cpu().detach().numpy(), distanceType='euclidean', k=10)
+                    listResult, size = generateLouvainCluster(edgeList)
+                    # sc sim loss
+                    loss_s = 0
+                    for i in range(size):
+                        #print(i)
+                        s = cosine_similarity(x_tar[np.asarray(listResult) == i,:].cpu().detach().numpy())
+                        s = 1-s
+                        loss_s += np.sum(np.triu(s,1))/((s.shape[0]*s.shape[0])*2-s.shape[0])
+                    #loss_s = torch.tensor(loss_s).cuda()
+                    if(device=="cuda"):
+                        loss_s = torch.tensor(loss_s).cuda()
+                    else:
+                        loss_s = torch.tensor(loss_s).cpu()
+                    loss_s.requires_grad_(True)
+                    loss_c = loss_function(y_pre, y_src)      
+                    loss_mmd = dist_loss(x_src_mmd, x_tar_mmd)
+                    #print(loss_s,loss_c,loss_mmd)
+    
+                    loss = loss_c + weight * loss_mmd +loss_s
+    
+    
+                    # zero the parameter (weight) gradients
+                    optimizer.zero_grad()
+    
+                    # backward + optimize only if in training phase
+                    if phase == 'train':
+                        loss.backward(retain_graph=True)
+                        # update the weights
+                        optimizer.step()
+    
+                    # print loss statistics
+                    running_loss += loss.item()
+                    running_mmd += loss_mmd.item()
+                    running_sc += loss_s.item()
+                    # Iterate over batch
+                    batch_j += 1
+                    if batch_j >= len(list_tar):
+                        batch_j = 0
+
+            # Average epoch loss
+            epoch_loss = running_loss / n_iters
+            epoch_mmd = running_mmd/n_iters
+            epoch_sc = running_sc/n_iters
+            # Step schedular
+            if phase == 'train':
+                scheduler.step(epoch_loss)
+            
+            # Savle loss
+            last_lr = scheduler.optimizer.param_groups[0]['lr']
+            loss_train[epoch,phase] = epoch_loss
+            mmd_train[epoch,phase] = epoch_mmd
+            sc_train[epoch,phase] = epoch_sc
+            
+            logging.info('{} Loss: {:.8f}. Learning rate = {}'.format(phase, epoch_loss,last_lr))
+            
+            if (phase == 'val') and (epoch_loss < best_loss) and (epoch >(n_epochs*(1-epoch_tail))) :
+                best_loss = epoch_loss
+                #best_model_wts = copy.deepcopy(net.state_dict())
+                # Save model if acheive better validation score
+                if best_model_cache == "memory":
+                    best_model_wts = copy.deepcopy(net.state_dict())
+                else:
+                    torch.save(net.state_dict(), save_path+"_bestcahce.pkl")
+ 
+    #     # Select best model wts
+    #     torch.save(best_model_wts, save_path)
+        
+    # net.load_state_dict(best_model_wts)           
+        # Select best model wts if use memory to cahce models
+    if best_model_cache == "memory":
+        torch.save(best_model_wts, save_path)
+        net.load_state_dict(best_model_wts)  
+    else:
+        net.load_state_dict((torch.load(save_path+"_bestcahce.pkl")))
+        torch.save(net.state_dict(), save_path)
+
+    return net, loss_train,mmd_train,sc_train    

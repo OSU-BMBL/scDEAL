@@ -41,6 +41,18 @@ torch.backends.cudnn.benchmark=False
 
 def run_main(args):
 
+    args.checkpoint = "save/bulk_pre/integrate_data_GSE112274_drug_GEFITINIB_bottle_256_edim_512,256_pdim_256,128_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_no"
+    if(args.checkpoint not in ["False","True"]):
+        selected_model = args.checkpoint
+        split_name = selected_model.split("/")[-1].split("_")
+        para_names = (split_name[1::2])
+        paras = (split_name[0::2])
+        args.encoder_hdims = paras[4]
+        args.predictor_h_dims = paras[5]
+        args.bottleneck = int(paras[3])
+        args.drug = paras[2]
+        args.dropout = float(paras[7])
+        args.dimreduce = paras[6]
     # Extract parameters
     epochs = args.epochs
     dim_au_out = args.bottleneck #8, 16, 32, 64, 128, 256,512
@@ -77,6 +89,12 @@ def run_main(args):
     
     #print(preditor_path )
     #model_path = args.bulk_model + para 
+
+    # Load model from checkpoint
+    if(args.checkpoint not in ["False","True"]):
+        para = os.path.basename(selected_model).split("_DaNN.pkl")[0]
+        args.checkpoint = 'True'
+
     preditor_path = args.bulk_model + para 
     bulk_encoder = args.bulk_encoder+para
     # Read data
@@ -205,7 +223,7 @@ def run_main(args):
     bulk_Y_allTensor = torch.LongTensor(label).to(device)
     dataloaders_train = {'train':trainDataLoader_p,'val':validDataLoader_p}
     print("bulk_X_allRensor",bulk_X_allTensor.shape)
-    if(bool(args.pretrain)!=False):
+    if(str(args.pretrain)!="False"):
         dataloaders_pretrain = {'train':X_trainDataLoader,'val':X_validDataLoader}
         if reduce_model == "VAE":
             encoder = VAEBase(input_dim=data.shape[1],latent_dim=dim_au_out,h_dims=encoder_hdims,drop_out=args.dropout)
@@ -224,17 +242,23 @@ def run_main(args):
         loss_function_e = nn.MSELoss()
         exp_lr_scheduler_e = lr_scheduler.ReduceLROnPlateau(optimizer_e)
 
+        # Load from checkpoint if checkpoint path is provided
+        if(args.checkpoint != "False"):
+            load = bulk_encoder
+        else:
+            load = False
+
         if reduce_model == "AE":
             encoder,loss_report_en = t.train_AE_model(net=encoder,data_loaders=dataloaders_pretrain,
-                                        optimizer=optimizer_e,loss_function=loss_function_e,
+                                        optimizer=optimizer_e,loss_function=loss_function_e,load=load,
                                         n_epochs=epochs,scheduler=exp_lr_scheduler_e,save_path=bulk_encoder)
         elif reduce_model == "VAE":
             encoder,loss_report_en = t.train_VAE_model(net=encoder,data_loaders=dataloaders_pretrain,
-                            optimizer=optimizer_e,
+                            optimizer=optimizer_e,load=False,
                             n_epochs=epochs,scheduler=exp_lr_scheduler_e,save_path=bulk_encoder)
         if reduce_model == "DAE":
             encoder,loss_report_en = t.train_DAE_model(net=encoder,data_loaders=dataloaders_pretrain,
-                                        optimizer=optimizer_e,loss_function=loss_function_e,
+                                        optimizer=optimizer_e,loss_function=loss_function_e,load=load,
                                         n_epochs=epochs,scheduler=exp_lr_scheduler_e,save_path=bulk_encoder)                          
                                     
         
@@ -268,10 +292,14 @@ def run_main(args):
 
     exp_lr_scheduler = lr_scheduler.ReduceLROnPlateau(optimizer)
 
-    # Train prediction model
+    # Train prediction model if load is not false
     #print("1111")
+    if(args.checkpoint != "False"):
+        load = True
+    else:
+        load = False
     model,report = t.train_predictor_model(model,dataloaders_train,
-                                            optimizer,loss_function,epochs,exp_lr_scheduler,load=load_model,save_path=preditor_path)
+                                            optimizer,loss_function,epochs,exp_lr_scheduler,load=load,save_path=preditor_path)
     if (args.printgene=='T'):
         import scanpypip.preprocessing as pp
         bulk_adata = pp.read_sc_file(data_path)
@@ -296,9 +324,9 @@ def run_main(args):
         #attr, delta =  ig.attribute(bulk_X_allTensor,target=1, return_convergence_delta=True,internal_batch_size=batch_size)
         attr = attr.detach().cpu().numpy()
         
-        np.savetxt("ori_result/"+args.data_name+"bulk_gradient.txt",attr,delimiter = " ")
+        np.savetxt("save/"+args.data_name+"bulk_gradient.txt",attr,delimiter = " ")
         from pandas.core.frame import DataFrame
-        DataFrame(bulk_pre).to_csv("ori_result/"+args.data_name+"bulk_lab.csv")
+        DataFrame(bulk_pre).to_csv("save/"+args.data_name+"bulk_lab.csv")
     dl_result = model(X_testTensor).detach().cpu().numpy()
 
 
@@ -325,10 +353,10 @@ def run_main(args):
     yhat = model.predict_proba(X_test)
     naive_probs = yhat[:, 1]
 
-    ut.plot_roc_curve(Y_test, naive_probs, pb_results, title=str(roc_auc_score(Y_test, pb_results)),
-                        path="save/figures/" + reduce_model + select_drug+now + '_roc.pdf')
-    ut.plot_pr_curve(Y_test,pb_results,  title=average_precision_score(Y_test, pb_results),
-                    path="save/figures/" + reduce_model + select_drug+now + '_prc.pdf')
+    # ut.plot_roc_curve(Y_test, naive_probs, pb_results, title=str(roc_auc_score(Y_test, pb_results)),
+    #                     path="save/figures/" + reduce_model + select_drug+now + '_roc.pdf')
+    # ut.plot_pr_curve(Y_test,pb_results,  title=average_precision_score(Y_test, pb_results),
+    #                 path="save/figures/" + reduce_model + select_drug+now + '_prc.pdf')
     print("bulk_model finished")
 
 if __name__ == '__main__':
@@ -344,14 +372,14 @@ if __name__ == '__main__':
     parser.add_argument('--valid_size', type=float, default=0.2,help='Size of the validation set for the bulk model traning, default: 0.2')
     parser.add_argument('--var_genes_disp', type=float, default=None,help='Dispersion of highly variable genes selection when pre-processing the data. \
                          If None, all genes will be selected .default: None')
-    parser.add_argument('--sampling', type=str, default='SMOTE',help='Samping method of training data for the bulk model traning. \
-                        Can be upsampling, downsampling, or SMOTE. default: SMOTE')
+    parser.add_argument('--sampling', type=str, default='no',help='Samping method of training data for the bulk model traning. \
+                        Can be upsampling, downsampling, or SMOTE. default: no')
     parser.add_argument('--PCA_dim', type=int, default=0,help='Number of components of PCA  reduction before training. If 0, no PCA will be performed. Default: 0')
 
     # trainv
     parser.add_argument('--device', type=str, default="cpu",help='Device to train the model. Can be cpu or gpu. Deafult: cpu')
     parser.add_argument('--bulk_encoder','-e', type=str, default='save/bulk_encoder/',help='Path of the pre-trained encoder in the bulk level')
-    parser.add_argument('--pretrain', type=int, default=1,help='Whether to perform pre-training of the encoder. 0: do not pretraing, 1: pretrain. Default: 0')
+    parser.add_argument('--pretrain', type=str, default="True",help='Whether to perform pre-training of the encoder,str. False: do not pretraing, True: pretrain. Default: True')
     parser.add_argument('--lr', type=float, default=1e-2,help='Learning rate of model training. Default: 1e-2')
     parser.add_argument('--epochs', type=int, default=500,help='Number of epoches training. Default: 500')
     parser.add_argument('--batch_size', type=int, default=200,help='Number of batch size when training. Default: 200')
@@ -364,12 +392,14 @@ if __name__ == '__main__':
                         Layers are seperated by a comma. Default: 16,8')
     parser.add_argument('--VAErepram', type=int, default=1)
     parser.add_argument('--data_name', type=str, default="GSE110894",help='Accession id for testing data, only support pre-built data.')
+    parser.add_argument('--checkpoint', type=str, default='True',help='Load weight from checkpoint files, can be True,False, or file path. Checkpoint files can be paraName1_para1_paraName2_para2... Default: True')
+
     # misc
     parser.add_argument('--bulk_model', '-p',  type=str, default='save/bulk_pre/',help='Path of the trained prediction model in the bulk level')
     parser.add_argument('--log', '-l',  type=str, default='save/logs/',help='Path of training log')
     parser.add_argument('--load_source_model',  type=int, default=0,help='Load a trained bulk level or not. 0: do not load, 1: load. Default: 0')
     parser.add_argument('--mod', type=str, default='new',help='Embed the cell type label to regularized the training: new: add cell type info, ori: do not add cell type info. Default: new')
-    parser.add_argument('--printgene', type=str, default='T',help='Print the cirtical gene list: T: print. Default: T')
+    parser.add_argument('--printgene', type=str, default='F',help='Print the cirtical gene list: T: print. Default: T')
     parser.add_argument('--dropout', type=float, default=0.3,help='Dropout of neural network. Default: 0.3')
     parser.add_argument('--bulk', type=str, default='integrate',help='Selection of the bulk database.integrate:both dataset. old: GDSC. new: CCLE. Default: integrate')
     warnings.filterwarnings("ignore")
