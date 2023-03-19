@@ -41,7 +41,7 @@ torch.backends.cudnn.benchmark=False
 
 def run_main(args):
 
-    args.checkpoint = "save/bulk_pre/integrate_data_GSE112274_drug_GEFITINIB_bottle_256_edim_512,256_pdim_256,128_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_no"
+    #args.checkpoint = "save/bulk_pre/integrate_data_GSE112274_drug_GEFITINIB_bottle_256_edim_512,256_pdim_256,128_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_no"
     if(args.checkpoint not in ["False","True"]):
         selected_model = args.checkpoint
         split_name = selected_model.split("/")[-1].split("_")
