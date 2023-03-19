@@ -62,7 +62,7 @@ After setting up the home directory, you need to download other resources requir
 
 [Click here to download scDEAL.zip](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m) 
 
-The file "scDEAL.zip" includes all the datasets we have tested. Please extract the zip file and place the sub directory "data" in the root directory of the "scDEAL" folder. 
+The file "scDEAL.zip" includes all the datasets we have tested. Please extract the zip file and place the sub-directory "data" in the root directory of the "scDEAL" folder. 
 |               |     Author             |     Drug         |     GEO access    |     Cells    |     Species           |     Cancer type                        |
 |---------------|------------------------|------------------|-------------------|--------------|-----------------------|----------------------------------------|
 |     Data 1&2  |     Sharma, et al.     |     Cisplatin    |     GSE117872     |     548      |     Homo   sapiens    |     Oral   squamous cell carcinomas    |
@@ -71,7 +71,7 @@ The file "scDEAL.zip" includes all the datasets we have tested. Please extract t
 |     Data 5    |     Aissa, et al.      |     Erlotinib    |     GSE149383     |     1496     |     Homo sapiens      |     Lung cancer                        |
 |     Data 6    |     Bell, et al.       |     I-BET-762    |     GSE110894     |     1419     |     Mus   musculus    |     Acute   myeloid leukemia           |
 
-"scDEAL.zip" also include model check points in the "save" directory. Try to extract the scDEAL.zip and put all resources into the home directory of scDEAL as follows:
+"scDEAL.zip" also includes model checkpoints in the "save" directory. Try to extract the scDEAL.zip and put all resources into the home directory of scDEAL as follows:
 
 ```
 scDEAL
