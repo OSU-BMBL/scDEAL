@@ -29,7 +29,7 @@ git clone https://github.com/OSU-BMBL/scDEAL.git
 cd scDEAL
 ```
 
-It’s recommended to install the scDEAL under the provided conda environment through the conda pack [download scdeal.tar.gz here](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBFrNlq3pvqwIBs8psJOHQTA?e=ujZRVY). It’s recommended to install in your root conda environment - the conda pack command will then be available in all sub-environments as well.
+It’s recommended to install the scDEAL under the provided conda environment through the conda pack [Click here to download scdeal.tar.gz](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBFrNlq3pvqwIBs8psJOHQTA?e=ujZRVY). It’s recommended to install in your root conda environment - the conda pack command will then be available in all sub-environments as well.
 ### Install with conda:
 conda-pack is available from Anaconda as well as from conda-forge:
 ```
@@ -72,8 +72,9 @@ The file "scDEAL.zip" includes all the datasets we have tested. Please extract t
 "scDEAL.zip" also includes model checkpoints in the "save" directory. Try to extract the scDEAL.zip and put all resources into the home directory of scDEAL as follows:
 
 ```
-scDEALenv
 scDEAL
+└───scDEALenv
+|   ...
 │   README.md
 │   bulkmodel.py  
 │   scmodel.py
@@ -81,7 +82,6 @@ scDEAL
 └───data
 │   │   ALL_expression.csv
 │   │   ALL_label_binary_wf.csv
-│   │   ...
 │   └───GSE110894
 │   └───GSE112274
 │   └───GSE117872
@@ -92,10 +92,10 @@ scDEAL
 |   └───logs
 |   └───figures
 |   └───models
-│   │     └───bulk_encoder
-│   │     └───bulk_pre
-│   │     └───sc_encoder
-│   │     └───sc_pre
+│   │   └───bulk_encoder
+│   │   └───bulk_pre
+│   │   └───sc_encoder
+│   │   └───sc_pre
 │   └───adata
 │   │    ...   
 └───DaNN
