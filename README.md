@@ -133,7 +133,6 @@ For example, run bulkmode.py with user-defined parameters:
 ```
 source scDEALenv/bin/activate
 python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling"
-
 ```
 
 This step takes the expression profile of bulk RNA-Seq and the drug response annotations as input. It will train a drug sensitivity predictor for the drug "I.BET.762." The output model will be stored in the directory "save/models." The prefix of the model's file name will be "bulk_predictor_ae_" and its full name will be dependent on the parameters that users insert. In this case. The file name of the bulk model will be "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling". For all available drug names, please refer to the columns names of files: ALL_label_binary_wf.csv. 
