@@ -68,7 +68,7 @@ def run_main(args):
     t0 = time.time()
 
     # Overwrite params if checkpoint is provided
-    args.checkpoint = "save/sc_pre/integrate_data_GSE112274_drug_GEFITINIB_bottle_256_edim_512,256_pdim_256,128_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_no_DaNN.pkl"
+    #args.checkpoint = "save/sc_pre/integrate_data_GSE112274_drug_GEFITINIB_bottle_256_edim_512,256_pdim_256,128_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_no_DaNN.pkl"
     if(args.checkpoint not in ["False","True"]):
         selected_model = args.checkpoint
         split_name = selected_model.split("/")[-1].split("_")

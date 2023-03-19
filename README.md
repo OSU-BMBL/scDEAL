@@ -18,6 +18,17 @@ This update provides all the shell files to help you repeat all the results.
 2. Migrate the source of testing data from the FTP to OneDrive.
 
 ## Installation 
+
+### Retrieve code from GitHub
+The software is a stand-alone python script package. The home directory of scDEAL can be cloned from the GitHub repository:
+
+```
+# Clone from Github
+git clone https://github.com/OSU-BMBL/scDEAL.git
+# Go into the directory
+cd scDEAL
+```
+
 It’s recommended to install the scDEAL under the provided conda environment through the conda pack [download scdeal.tar.gz here](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBFrNlq3pvqwIBs8psJOHQTA?e=ujZRVY). It’s recommended to install in your root conda environment - the conda pack command will then be available in all sub-environments as well.
 ### Install with conda:
 conda-pack is available from Anaconda as well as from conda-forge:
@@ -31,29 +42,16 @@ While conda-pack requires an existing conda install, it can also be installed fr
 pip install conda-pack
 ```
 
-## Load the scDEAL environment
+## Load the scDEALenv environment
 conda-pack is primarily a command line tool. Full CLI docs can be found here.
 One common use case is packing an environment on one machine to distribute to other machines that may not have conda/python installed.
 Import and activate the environment of your target machine:
 ```
-# Unpack environment into directory `scDEAL`
-$ mkdir -p scDEAL
-$ tar -xzf scDEAL.tar.gz -C scDEAL
-
-# Use python without activating or fixing the prefixes. Most python
-# libraries will work fine, but things that require prefix cleanups
-# will fail.
-$ ./scDEAL/bin/python
-
-# Activate the environment. This adds `scDEAL/bin` to your path
-$ source scDEAL/bin/activate
-```
-
-### Retrieve code from GitHub
-The software is a stand-alone python script package. The home directory of scDEAL can be cloned from the GitHub repository:
-
-```
-git clone https://github.com/OSU-BMBL/scDEAL.git
+# Unpack environment into directory `scDEALenv`
+$ mkdir -p scDEALenv
+$ tar -xzf scDEAL.tar.gz -C scDEALenv
+# Activate the environment. This adds `scDEALenv/bin` to your path
+$ source scDEALenv/bin/activate
 ```
 
 ## Data Preparation
@@ -74,6 +72,7 @@ The file "scDEAL.zip" includes all the datasets we have tested. Please extract t
 "scDEAL.zip" also includes model checkpoints in the "save" directory. Try to extract the scDEAL.zip and put all resources into the home directory of scDEAL as follows:
 
 ```
+scDEALenv
 scDEAL
 │   README.md
 │   bulkmodel.py  
@@ -84,36 +83,24 @@ scDEAL
 │   │   ALL_label_binary_wf.csv
 │   │   ...
 │   └───GSE110894
-│   |   │   GSE110894.csv
-│   |   │   GSE110894_CellInfo.xlsx
-│   |       ...
 │   └───GSE112274
 │   └───GSE117872
 │   └───GSE140440
 │   └───GSE149383
 │   |   ...
 └───save
-│   │   
 |   └───logs
-│   │    ...
 |   └───figures
-│   │    ...
 |   └───models
 │   │     └───bulk_encoder
 │   │     └───bulk_pre
 │   │     └───sc_encoder
 │   │     └───sc_pre
-│   │    ...
 │   └───adata
-│   |    │
-│   |    └───data
 │   │    ...   
 └───DaNN
-│   │    ...   
 └───scanpypip
 │   │    ...  
-└───figures
-│   │    ...
 ```
 
 ### Directory contents
@@ -164,7 +151,7 @@ The file name of the single cell model will be "save/sc_pre/integrate_data_GSE11
 Run bulkmode.py and scmodel.py with user-defined parameters:
 
 ```
-source scDEAL/bin/activate
+source scDEALenv/bin/activate
 python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "False"
 python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --printgene "F" -mod "new" --checkpoint "False"
 ```
