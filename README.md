@@ -3,11 +3,11 @@ Deep Transfer Learning of Drug Sensitivity by Integrating Bulk and Single-cell R
 
 ## News 2023/03/19
 Multiple package versions changed and therefore the results shown in the article cannot be fully replicated, but we provide the full result information (embedding, sensitive score and so on) for all of our data, stored in the adata format. These results can be downloaded from [here](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EYru-LaQC1tHlFZSnf1RA_cBjXwIafy-iDsajEWjh8xcjA?e=2sE61e).   
-Now, we are re-tunning parameters based on the current version environment and we will show the results on GitHub. 
+Now, we are re-tuning parameters based on the current version environment and we will show the results on GitHub. 
 
 This update provides all the shell files to help you repeat all the results.
 1. Added the function of loading checkpoint weights to the model.
-2. Added the conda environent applied to to produce the result.
+2. Added the conda environment applied to produce the result.
 3. Reorganized and uploaded the resources need for the code.
 
 ## News 2022/12/04
@@ -18,7 +18,7 @@ This update provides all the shell files to help you repeat all the results.
 2. Migrate the source of testing data from the FTP to OneDrive.
 
 ## Installation 
-It’s recommended to install the scDEAL under the provided conda environment through conda pack [download scdeal.tar.gz here](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBFrNlq3pvqwIBs8psJOHQTA?e=ujZRVY).It’s recommended to install in your root conda environment - the conda pack command will then be available in all sub-environments as well.
+It’s recommended to install the scDEAL under the provided conda environment through the conda pack [download scdeal.tar.gz here](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBFrNlq3pvqwIBs8psJOHQTA?e=ujZRVY). It’s recommended to install in your root conda environment - the conda pack command will then be available in all sub-environments as well.
 ### Install with conda:
 conda-pack is available from Anaconda as well as from conda-forge:
 ```
@@ -34,7 +34,7 @@ pip install conda-pack
 ## Load the scDEAL environment
 conda-pack is primarily a command line tool. Full CLI docs can be found here.
 One common use case is packing an environment on one machine to distribute to other machines that may not have conda/python installed.
-Import and activate the enviroment your target machine:
+Import and activate the environment of your target machine:
 ```
 # Unpack environment into directory `scDEAL`
 $ mkdir -p scDEAL
@@ -47,41 +47,22 @@ $ ./scDEAL/bin/python
 
 # Activate the environment. This adds `scDEAL/bin` to your path
 $ source scDEAL/bin/activate
-
-# Run python from in the environment
-(scDEAL) $ python
-
-# Cleanup prefixes from in the active environment.
-# Note that this command can also be run without activating the environment
-# as long as some version of python is already installed on the machine.
-(scDEAL) $ conda-unpack
-
-# At this point the environment is exactly as if you installed it here
-# using conda directly. All scripts should work fine.
-(scDEAL) $ ipython --version
-
-# Deactivate the environment to remove it from your path
-(scDEAL) $ source scDEAL/bin/deactivate
 ```
 
-### Retrieve code from github
-The software is a stand-alone python script package. It can be downloaded and installed with this github repository:
+### Retrieve code from GitHub
+The software is a stand-alone python script package. The home directory of scDEAL can be cloned from the GitHub repository:
 
 ```
 git clone https://github.com/OSU-BMBL/scDEAL.git
 ```
 
-### Typical install time
-Or download the .zip file from the repository/ acquire the .zip file then decompress .zip file.
-The download time depends on the network speed of the user. No extra compilations or installation time is required to run our main script. The installation time of dependencies is normally 1 minute per package.
-
-## Data preparation
+## Data Preparation
 ### Data download
-Please create download the zip format dataset from the [scDEAL.zip](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m) link inside:
+After setting up the home directory, you need to download other resources required for the run. Please create and download the zip format dataset from the [scDEAL.zip](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m) link inside:
 
 [Click here to download scDEAL.zip](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m) 
 
-The file "scDEAL.zip" includes all the datasets we have tested. Please extract the zip file and place it in the root directory of the scDEAL folder.
+The file "scDEAL.zip" includes all the datasets we have tested. Please extract the zip file and place the sub directory "data" in the root directory of the "scDEAL" folder. 
 |               |     Author             |     Drug         |     GEO access    |     Cells    |     Species           |     Cancer type                        |
 |---------------|------------------------|------------------|-------------------|--------------|-----------------------|----------------------------------------|
 |     Data 1&2  |     Sharma, et al.     |     Cisplatin    |     GSE117872     |     548      |     Homo   sapiens    |     Oral   squamous cell carcinomas    |
@@ -90,7 +71,7 @@ The file "scDEAL.zip" includes all the datasets we have tested. Please extract t
 |     Data 5    |     Aissa, et al.      |     Erlotinib    |     GSE149383     |     1496     |     Homo sapiens      |     Lung cancer                        |
 |     Data 6    |     Bell, et al.       |     I-BET-762    |     GSE110894     |     1419     |     Mus   musculus    |     Acute   myeloid leukemia           |
 
-The organization of the directory should be similar as follows:
+"scDEAL.zip" also include model check points in the "save" directory. Try to extract the scDEAL.zip and put all resources into the home directory of scDEAL as follows:
 
 ```
 scDEAL
@@ -143,14 +124,14 @@ Folders in our package will store the corresponding contents:
 - save/logs: log and error files that record running status. 
 - save/figures & figures: figures generated through the run. 
 - save/models: models trained through the run. 
-- save/adata: results AnnData outputs.
+- save/adata: results from AnnData outputs.
 - DaNN: python scripts describe the model.
 - scanpypip: python scripts of utilities.
 
 ## Demo
 ### Pretrained checkpoints
-For the scRNA-Seq prediction task, we provide pretrained checkpoints for the models stored in save/models 
-Naminig rules of the checkpoint are as follows:
+For the scRNA-Seq prediction task, we provide pre-trained checkpoints for the models stored in save/models 
+The naming rules of the checkpoint are as follows:
 
 bulk dataset+"_data_"+scRNA-Seq dataset+"_drug_"+drug+"_bottle_"+bottle+"_edim_"+encoder dimensions+"_pdim_"+predictor dimensions+"_model_"+encoder model+"_dropout_"+dropout+"_gene_"+show critical genes+"_lr_"+learning rate+"_mod_"+model version+"_sam_"+sampling method(+"_DANN.pkl"only in the final single cell model)    
 
@@ -163,17 +144,17 @@ For resuming training, you can use the --checkpoint option of bulkmodel.py and s
 For example, run bulkmode.py with user-defined parameters:
 
 ```
-$ source scDEAL/bin/activate
-(scDEAL) $ python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling"
+source scDEAL/bin/activate
+python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling"
 
 ```
 
-This step takes the expression profile of bulk RNA-Seq and the drug response annotations as input. It will train a drug sensitivity predictor for the drug "I.BET.762." The output model will be stored in the directory "save/models." The prefix of the model's file name will be "bulk_predictor_ae_" and its full name will be dependent on parameters that users insert. In this case. The file name of the bulk model will be "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling". For all available drug names, please refer to the columns names of files: ALL_label_binary_wf.csv. 
+This step takes the expression profile of bulk RNA-Seq and the drug response annotations as input. It will train a drug sensitivity predictor for the drug "I.BET.762." The output model will be stored in the directory "save/models." The prefix of the model's file name will be "bulk_predictor_ae_" and its full name will be dependent on the parameters that users insert. In this case. The file name of the bulk model will be "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling". For all available drug names, please refer to the columns names of files: ALL_label_binary_wf.csv. 
 
-For the transfer learning, we provide a built-in testing case of acute myeloid leukemia cells [Bell et al.](https://doi.org/10.1038/s41467-019-10652-9) accessed from Gene Expression Omnibus (GEO) accession [GSE110894](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE110894). The training time for the cases are:  
+For the transfer learning, we provide a built-in testing case of acute myeloid leukemia cells [Bell](https://doi.org/10.1038/s41467-019-10652-9) et al.](https://doi.org/10.1038/s41467-019-10652-9) accessed from Gene Expression Omnibus (GEO) accession [GSE110894](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE110894). The training time for the cases are:  
 
 ```
-(scDEAL) $ python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --printgene "F" -mod "new" --checkpoint "save/sc_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl"
+python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --printgene "F" -mod "new" --checkpoint "save/sc_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl"
 ```
 This step trains the scDEAL model and predicts the sensitivity of I-BET-762 of the input scRNA-Seq data from GSE110984. Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,128" --bottleneck 512) in two steps. Other applicable drugs and their resistance can be viewed from the table provided in the file: 
 [ALL_label_binary_wf.csv](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m)
@@ -183,17 +164,17 @@ The file name of the single cell model will be "save/sc_pre/integrate_data_GSE11
 Run bulkmode.py and scmodel.py with user-defined parameters:
 
 ```
-$ source scDEAL/bin/activate
-(scDEAL) $ python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "False"
-(scDEAL) $ python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --printgene "F" -mod "new" --checkpoint "False"
+source scDEAL/bin/activate
+python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "False"
+python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --printgene "F" -mod "new" --checkpoint "False"
 ```
 This step trains the scDEAL model and predicts the sensitivity of I-BET-762 of the input scRNA-Seq data from GSE110984. Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,256" --bottleneck 256) in two steps. Other applicable drugs and their resistance can be viewed from the table provided in the file: 
 
-### Expected run time for demo
+### Expected run time for the demo
 The training time of the test case including bulk-level and single-cell-level training on the testing computer was 4 minutes.
 
 ### Expected output
-The expected output format of scDEAL is the [AnnData](https://anndata.readthedocs.io/en/latest/anndata.AnnData.html) object (.h5ad) applied by the scanpy package. The file will be stored in the directory "scDEAL//adata/data/". The prediction of sensitivity will be stored in adata.obs["sens_label"] (if you load your AnnDdata object named as adata) where 0 represents resistance and 1 represents sensitivity respectively. Further analysis for the output can be processed by the package [Scanpy](https://scanpy.readthedocs.io/en/stable/). The object can be loaded into python through the function: [scanpy.read_h5ad](https://scanpy.readthedocs.io/en/latest/generated/scanpy.read_h5ad.html#scanpy-read-h5ad). 
+The expected output format of scDEAL is the [AnnData](https://anndata.readthedocs.io/en/latest/anndata.AnnData.html) object (.h5ad) applied by the scanpy package. The file will be stored in the directory "scDEAL/adata/data/". The prediction of sensitivity will be stored in adata.obs["sens_label"] (if you load your AnnDdata object named as adata) where 0 represents resistance and 1 represents sensitivity respectively. Further analysis for the output can be processed by the package [Scanpy](https://scanpy.readthedocs.io/en/stable/). The object can be loaded into python through the function: [scanpy.read_h5ad](https://scanpy.readthedocs.io/en/latest/generated/scanpy.read_h5ad.html#scanpy-read-h5ad). 
 
 The expected output format of a successful run show includes:
 
@@ -224,12 +205,11 @@ python bulkmodel.py --drug [*Your selected drug*] --data [*Your own bulk level e
 python scmodel.py --sc_data [*Your own data path*] ...
 ```
 
-Formats for your own drug resistance table and your bulk level expression should be identical to files in the demo:
+Formats for your drug resistance table and your bulk level expression should be identical to the files in the demo:
 - [ALL_label_binary_wf.csv](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m)
 - [ALL_expression.csv](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m)
 
 For more detailed parameter settings of the two scripts, please refer to the documentation section.
-
 
 ## * Appendix
 ### * Appendix A: case studies
