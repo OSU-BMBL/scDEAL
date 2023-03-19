@@ -1,44 +1,70 @@
 # scDEAL documentation
 Deep Transfer Learning of Drug Sensitivity by Integrating Bulk and Single-cell RNA-seq data
 
-## News 2023/03/07
+## News 2023/03/19
 Multiple package versions changed and therefore the results shown in the article cannot be fully replicated, but we provide the full result information (embedding, sensitive score and so on) for all of our data, stored in the adata format. These results can be downloaded from [here](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EYru-LaQC1tHlFZSnf1RA_cBjXwIafy-iDsajEWjh8xcjA?e=2sE61e).   
 Now, we are re-tunning parameters based on the current version environment and we will show the results on GitHub. 
-This update provides all the shell files to help you repeat all the results .
+
+This update provides all the shell files to help you repeat all the results.
+1. Added the function of loading checkpoint weights to the model.
+2. Added the conda environent applied to to produce the result.
+3. Reorganized and uploaded the resources need for the code.
 
 ## News 2022/12/04
 1. Add trained adata.h5ad objects for 6 data examples.
-
 
 ## Previous News 
 1. Added the function to use clustering labels to help transfer learning. Details are listed in the usage section.
 2. Migrate the source of testing data from the FTP to OneDrive.
 
-## System requirements
-The following packages are required to run the program:
-
-- conda 4.8.4
-- python 3.7.3
-- torch 1.3.0
-- sklearn 0.23.0
-- imblearn 0.7.0
-- scanpy 1.6.0
-- captum 0.4.1
-
-This software is developed and tested in the following software environment:
+## Installation 
+It’s recommended to install the scDEAL under the provided conda environment through conda pack [download scdeal.tar.gz here](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBFrNlq3pvqwIBs8psJOHQTA?e=ujZRVY).It’s recommended to install in your root conda environment - the conda pack command will then be available in all sub-environments as well.
+### Install with conda:
+conda-pack is available from Anaconda as well as from conda-forge:
 ```
-Python 3.7.3 (default, Apr 24 2019, 15:29:51) [MSC v.1915 64 bit (AMD64)] :: Anaconda, Inc. on win32
+conda install conda-pack
+conda install -c conda-forge conda-pack
+```
+### Install from PyPI:
+While conda-pack requires an existing conda install, it can also be installed from PyPI:
+```
+pip install conda-pack
 ```
 
-This software is developed and tested on the hardware environments of:
-- CPU: HexaCore Intel Core i7-9750H, 4100 MHz (41 x 100)
-- RAM: 32GB
-- GPU: nVIDIA GeForce GTX 1660 Ti with Max-Q Design
+## Load the scDEAL environment
+conda-pack is primarily a command line tool. Full CLI docs can be found here.
+One common use case is packing an environment on one machine to distribute to other machines that may not have conda/python installed.
+Import and activate the enviroment your target machine:
+```
+# Unpack environment into directory `scDEAL`
+$ mkdir -p scDEAL
+$ tar -xzf scDEAL.tar.gz -C scDEAL
 
-No non-standard hardware is required for the software.
+# Use python without activating or fixing the prefixes. Most python
+# libraries will work fine, but things that require prefix cleanups
+# will fail.
+$ ./scDEAL/bin/python
 
-## Installation guide
-### Instructions
+# Activate the environment. This adds `scDEAL/bin` to your path
+$ source scDEAL/bin/activate
+
+# Run python from in the environment
+(scDEAL) $ python
+
+# Cleanup prefixes from in the active environment.
+# Note that this command can also be run without activating the environment
+# as long as some version of python is already installed on the machine.
+(scDEAL) $ conda-unpack
+
+# At this point the environment is exactly as if you installed it here
+# using conda directly. All scripts should work fine.
+(scDEAL) $ ipython --version
+
+# Deactivate the environment to remove it from your path
+(scDEAL) $ source scDEAL/bin/deactivate
+```
+
+### Retrieve code from github
 The software is a stand-alone python script package. It can be downloaded and installed with this github repository:
 
 ```
@@ -47,15 +73,15 @@ git clone https://github.com/OSU-BMBL/scDEAL.git
 
 ### Typical install time
 Or download the .zip file from the repository/ acquire the .zip file then decompress .zip file.
-The download time depends on the network speed of the user. No extra compile or installation time is required to run our main script. The installation time of dependencies is normally 1 minute per package.
+The download time depends on the network speed of the user. No extra compilations or installation time is required to run our main script. The installation time of dependencies is normally 1 minute per package.
 
 ## Data preparation
 ### Data download
-Please create download the zip format dataset from the [data.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/Ea3i3US5UxNPimvCHSaW9fMB6R5Cfylg-9XbJ8GXefWudg) link inside:
+Please create download the zip format dataset from the [scDEAL.zip](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m) link inside:
 
-[Click here to download data.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/Ea3i3US5UxNPimvCHSaW9fMB6R5Cfylg-9XbJ8GXefWudg) 
+[Click here to download scDEAL.zip](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m) 
 
-The file "data.zip" includes all the datasets we have tested. Please extract the zip file and place it in the root directory of the scDEAL folder.
+The file "scDEAL.zip" includes all the datasets we have tested. Please extract the zip file and place it in the root directory of the scDEAL folder.
 |               |     Author             |     Drug         |     GEO access    |     Cells    |     Species           |     Cancer type                        |
 |---------------|------------------------|------------------|-------------------|--------------|-----------------------|----------------------------------------|
 |     Data 1&2  |     Sharma, et al.     |     Cisplatin    |     GSE117872     |     548      |     Homo   sapiens    |     Oral   squamous cell carcinomas    |
@@ -92,6 +118,10 @@ scDEAL
 |   └───figures
 │   │    ...
 |   └───models
+│   │     └───bulk_encoder
+│   │     └───bulk_pre
+│   │     └───sc_encoder
+│   │     └───sc_pre
 │   │    ...
 │   └───adata
 │   |    │
@@ -118,28 +148,46 @@ Folders in our package will store the corresponding contents:
 - scanpypip: python scripts of utilities.
 
 ## Demo
-### Instructions to run on data
-Two main scripts to run the program are bulkmodel.py and scmodel.py
-Run bulkmode.py first using the python command line to train the source model.
+### Pretrained checkpoints
+For the scRNA-Seq prediction task, we provide pretrained checkpoints for the models stored in save/models 
+Naminig rules of the checkpoint are as follows:
 
+bulk dataset+"_data_"+scRNA-Seq dataset+"_drug_"+drug+"_bottle_"+bottle+"_edim_"+encoder dimensions+"_pdim_"+predictor dimensions+"_model_"+encoder model+"_dropout_"+dropout+"_gene_"+show critical genes+"_lr_"+learning rate+"_mod_"+model version+"_sam_"+sampling method(+"_DANN.pkl"only in the final single cell model)    
+
+An example can be:
+
+integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl
+
+Usage:
+For resuming training, you can use the --checkpoint option of bulkmodel.py and scmodel.py.
 For example, run bulkmode.py with user-defined parameters:
 
 ```
-python bulkmodel.py --drug 'I-BET-762' --dimreduce 'AE' --encoder_h_dims "256,256" --predictor_h_dims "128,64" --bottleneck 256 --data_name 'GSE110894' --sampling 'SMOTE' --dropout 0.3 --printgene 'F' -mod 'new'
+$ source scDEAL/bin/activate
+(scDEAL) $ python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling"
 
 ```
 
-This step takes the expression profile of bulk RNA-Seq and the drug response annotations as input. Iw will train a drug sensitivity predictor for the drug 'I-BET-762.' The output model will be stored in the directory "save/models." The prefix of the model's file name will be 'bulk_predictor_ae_' and its full name will be dependent on parameters that users insert. In this case. The file name of the bulk model will be "bulk_predictor_AEI-BET-762.pkl". For all available drug names, please refer to the columns names of files: ALL_label_binary_wf.csv. 
+This step takes the expression profile of bulk RNA-Seq and the drug response annotations as input. It will train a drug sensitivity predictor for the drug "I.BET.762." The output model will be stored in the directory "save/models." The prefix of the model's file name will be "bulk_predictor_ae_" and its full name will be dependent on parameters that users insert. In this case. The file name of the bulk model will be "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling". For all available drug names, please refer to the columns names of files: ALL_label_binary_wf.csv. 
 
 For the transfer learning, we provide a built-in testing case of acute myeloid leukemia cells [Bell et al.](https://doi.org/10.1038/s41467-019-10652-9) accessed from Gene Expression Omnibus (GEO) accession [GSE110894](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE110894). The training time for the cases are:  
 
+```
+(scDEAL) $ python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --printgene "F" -mod "new" --checkpoint "save/sc_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl"
+```
+This step trains the scDEAL model and predicts the sensitivity of I-BET-762 of the input scRNA-Seq data from GSE110984. Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,128" --bottleneck 512) in two steps. Other applicable drugs and their resistance can be viewed from the table provided in the file: 
+[ALL_label_binary_wf.csv](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m)
+The file name of the single cell model will be "save/sc_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl".
+
+### Train from scratch
+Run bulkmode.py and scmodel.py with user-defined parameters:
 
 ```
-python scmodel.py --sc_data 'GSE110894' --dimreduce 'AE' --drug 'I-BET-762'  --bulk_h_dims "256,256" --bottleneck 256 --predictor_h_dims "128,64" --dropout 0.3 --printgene 'F' -mod 'new'
+$ source scDEAL/bin/activate
+(scDEAL) $ python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "False"
+(scDEAL) $ python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --printgene "F" -mod "new" --checkpoint "False"
 ```
 This step trains the scDEAL model and predicts the sensitivity of I-BET-762 of the input scRNA-Seq data from GSE110984. Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,256" --bottleneck 256) in two steps. Other applicable drugs and their resistance can be viewed from the table provided in the file: 
-
-[ALL_label_binary_wf.csv](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/Ea3i3US5UxNPimvCHSaW9fMB6R5Cfylg-9XbJ8GXefWudg)
 
 ### Expected run time for demo
 The training time of the test case including bulk-level and single-cell-level training on the testing computer was 4 minutes.
@@ -161,9 +209,10 @@ scDEAL
 │   │        GSE110894[a timestamp].h5ad   
 │   │    ...   
 |   └───models
-│   │    bulk_endoder_ae_256.pkl
-│   │    bulk_predictor_AEIBET-762.pkl
-│   │    sc_predictor_DaNN.pkl
+│   │    save/bulk_encoder
+│   │    save/bulk_pre
+│   │    save/sc_encoder
+│   │    save/sc_pre
 │   │    ...
 ```
 ### Run the software on your data
@@ -176,8 +225,8 @@ python scmodel.py --sc_data [*Your own data path*] ...
 ```
 
 Formats for your own drug resistance table and your bulk level expression should be identical to files in the demo:
-- [ALL_label_binary_wf.csv](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/Ea3i3US5UxNPimvCHSaW9fMB6R5Cfylg-9XbJ8GXefWudg)
-- [ALL_expression.csv](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/Ea3i3US5UxNPimvCHSaW9fMB6R5Cfylg-9XbJ8GXefWudg)
+- [ALL_label_binary_wf.csv](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m)
+- [ALL_expression.csv](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m)
 
 For more detailed parameter settings of the two scripts, please refer to the documentation section.
 
@@ -187,9 +236,9 @@ For more detailed parameter settings of the two scripts, please refer to the doc
 The folder named "casestudy" contains Jupyter notebook templates of selected case studies in the paper. You can follow the introduction within each notebook to create analysis results for scDEAL. For example, run bulkmode.py with user-defined parameters:
 
 ```
-python bulkmodel.py --drug [*Your selected drug*] --data [*Your own bulk level expression*] --label [*Your own bulk level drug resistance table*] ...  --printgene 'T'
+python bulkmodel.py --drug [*Your selected drug*] --data [*Your own bulk level expression*] --label [*Your own bulk level drug resistance table*] ...  --printgene "T"
 
-python scmodel.py --sc_data [*Your own data path*] ... --printgene 'T'
+python scmodel.py --sc_data [*Your own data path*] ... --printgene "T"
 ```
 - [casestudy/analysis_criticalgenes.ipynb](casestudy/analysis_criticalgenes.ipynb): critical gene identification by integrated gradient matrix; 
 - [casestudy/analysis_tarined_anndata.ipynb](casestudy/analysis_tarined_anndata.ipynb): umap, gene score, and regression plot of single-cell level prediction.
@@ -200,14 +249,14 @@ Trained results as scanpy h5ad objects for the example datasets are provided as 
 - [adata.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EYru-LaQC1tHlFZSnf1RA_cBjXwIafy-iDsajEWjh8xcjA?e=2sE61e)
 
 
-
 ## Documentation
 * Command: python bulkmodel.py
 ```
-usage: bulkmodel.py [-h] [--data DATA] [--label LABEL] [--result RESULT] [--drug DRUG] [--missing_value MISSING_VALUE] [--test_size TEST_SIZE] [--valid_size VALID_SIZE] [--var_genes_disp VAR_GENES_DISP] [--sampling SAMPLING]
-                    [--PCA_dim PCA_DIM] [--bulk_encoder BULK_ENCODER] [--pretrain PRETRAIN] [--lr LR] [--epochs EPOCHS] [--batch_size BATCH_SIZE] [--bottleneck BOTTLENECK] [--dimreduce DIMREDUCE] [--freeze_pretrain FREEZE_PRETRAIN]       
-                    [--encoder_h_dims ENCODER_H_DIMS] [--predictor_h_dims PREDICTOR_H_DIMS] [--VAErepram VAEREPRAM] [--data_name DATA_NAME] [--bulk_model BULK_MODEL] [--log LOG] [--load_source_model LOAD_SOURCE_MODEL] [--mod MOD]
-                    [--printgene PRINTGENE] [--dropout DROPOUT] [--bulk BULK]
+usage: bulkmodel.py [-h] [--data DATA] [--label LABEL] [--result RESULT] [--drug DRUG] [--missing_value MISSING_VALUE] [--test_size TEST_SIZE] [--valid_size VALID_SIZE]
+                    [--var_genes_disp VAR_GENES_DISP] [--sampling SAMPLING] [--PCA_dim PCA_DIM] [--device DEVICE] [--bulk_encoder BULK_ENCODER] [--pretrain PRETRAIN] [--lr LR] [--epochs EPOCHS]
+                    [--batch_size BATCH_SIZE] [--bottleneck BOTTLENECK] [--dimreduce DIMREDUCE] [--freeze_pretrain FREEZE_PRETRAIN] [--encoder_h_dims ENCODER_H_DIMS]
+                    [--predictor_h_dims PREDICTOR_H_DIMS] [--VAErepram VAEREPRAM] [--data_name DATA_NAME] [--checkpoint CHECKPOINT] [--bulk_model BULK_MODEL] [--log LOG]
+                    [--load_source_model LOAD_SOURCE_MODEL] [--mod MOD] [--printgene PRINTGENE] [--dropout DROPOUT] [--bulk BULK]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -223,11 +272,12 @@ optional arguments:
                         Size of the validation set for the bulk model traning, default: 0.2
   --var_genes_disp VAR_GENES_DISP
                         Dispersion of highly variable genes selection when pre-processing the data. If None, all genes will be selected .default: None
-  --sampling SAMPLING   Samping method of training data for the bulk model traning. Can be upsampling, downsampling, or SMOTE. default: None
+  --sampling SAMPLING   Samping method of training data for the bulk model traning. Can be upsampling, downsampling, or SMOTE. default: no
   --PCA_dim PCA_DIM     Number of components of PCA reduction before training. If 0, no PCA will be performed. Default: 0
+  --device DEVICE       Device to train the model. Can be cpu or gpu. Deafult: cpu
   --bulk_encoder BULK_ENCODER, -e BULK_ENCODER
                         Path of the pre-trained encoder in the bulk level
-  --pretrain PRETRAIN   Whether to perform pre-training of the encoder. 0: do not pretraing, 1: pretrain. Default: 0
+  --pretrain PRETRAIN   Whether to perform pre-training of the encoder,str. False: do not pretraing, True: pretrain. Default: True
   --lr LR               Learning rate of model training. Default: 1e-2
   --epochs EPOCHS       Number of epoches training. Default: 500
   --batch_size BATCH_SIZE
@@ -245,6 +295,8 @@ optional arguments:
   --VAErepram VAEREPRAM
   --data_name DATA_NAME
                         Accession id for testing data, only support pre-built data.
+  --checkpoint CHECKPOINT
+                        Load weight from checkpoint files, can be True,False, or file path. Checkpoint files can be paraName1_para1_paraName2_para2... Default: True
   --bulk_model BULK_MODEL, -p BULK_MODEL
                         Path of the trained prediction model in the bulk level
   --log LOG, -l LOG     Path of training log
@@ -255,15 +307,17 @@ optional arguments:
                         Print the cirtical gene list: T: print. Default: T
   --dropout DROPOUT     Dropout of neural network. Default: 0.3
   --bulk BULK           Selection of the bulk database.integrate:both dataset. old: GDSC. new: CCLE. Default: integrate
-```
+  ```
 * Command: python scmodel.py
 
 ```
-usage: scmodel.py [-h] [--bulk_data BULK_DATA] [--label LABEL] [--sc_data SC_DATA] [--drug DRUG] [--missing_value MISSING_VALUE] [--test_size TEST_SIZE] [--valid_size VALID_SIZE] [--var_genes_disp VAR_GENES_DISP]
-                  [--min_n_genes MIN_N_GENES] [--max_n_genes MAX_N_GENES] [--min_g MIN_G] [--min_c MIN_C] [--percent_mito PERCENT_MITO] [--cluster_res CLUSTER_RES] [--mmd_weight MMD_WEIGHT] [--mmd_GAMMA MMD_GAMMA]
-                  [--bulk_model_path BULK_MODEL_PATH] [--sc_model_path SC_MODEL_PATH] [--pretrain PRETRAIN] [--lr LR] [--epochs EPOCHS] [--batch_size BATCH_SIZE] [--bottleneck BOTTLENECK] [--dimreduce DIMREDUCE]
-                  [--freeze_pretrain FREEZE_PRETRAIN] [--bulk_h_dims BULK_H_DIMS] [--sc_h_dims SC_H_DIMS] [--predictor_h_dims PREDICTOR_H_DIMS] [--VAErepram VAEREPRAM] [--batch_id BATCH_ID] [--load_sc_model LOAD_SC_MODEL] [--mod MOD]     
-                  [--printgene PRINTGENE] [--dropout DROPOUT] [--logging_file LOGGING_FILE] [--sampling SAMPLING] [--fix_source FIX_SOURCE] [--bulk BULK]
+usage: scmodel.py [-h] [--bulk_data BULK_DATA] [--label LABEL] [--sc_data SC_DATA] [--drug DRUG] [--missing_value MISSING_VALUE] [--test_size TEST_SIZE] [--valid_size VALID_SIZE]
+                  [--var_genes_disp VAR_GENES_DISP] [--min_n_genes MIN_N_GENES] [--max_n_genes MAX_N_GENES] [--min_g MIN_G] [--min_c MIN_C] [--percent_mito PERCENT_MITO]
+                  [--cluster_res CLUSTER_RES] [--mmd_weight MMD_WEIGHT] [--mmd_GAMMA MMD_GAMMA] [--device DEVICE] [--bulk_model_path BULK_MODEL_PATH] [--sc_model_path SC_MODEL_PATH]
+                  [--sc_encoder_path SC_ENCODER_PATH] [--checkpoint CHECKPOINT] [--lr LR] [--epochs EPOCHS] [--batch_size BATCH_SIZE] [--bottleneck BOTTLENECK] [--dimreduce DIMREDUCE]
+                  [--freeze_pretrain FREEZE_PRETRAIN] [--bulk_h_dims BULK_H_DIMS] [--sc_h_dims SC_H_DIMS] [--predictor_h_dims PREDICTOR_H_DIMS] [--VAErepram VAEREPRAM] [--batch_id BATCH_ID]
+                  [--load_sc_model LOAD_SC_MODEL] [--mod MOD] [--printgene PRINTGENE] [--dropout DROPOUT] [--logging_file LOGGING_FILE] [--sampling SAMPLING] [--fix_source FIX_SOURCE]
+                  [--bulk BULK]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -294,11 +348,15 @@ optional arguments:
                         Weight of the MMD loss of the transfer learning, default: 0.25
   --mmd_GAMMA MMD_GAMMA
                         Gamma parameter in the kernel of the MMD loss of the transfer learning, default: 1000
+  --device DEVICE       Device to train the model. Can be cpu or gpu. Deafult: cpu
   --bulk_model_path BULK_MODEL_PATH, -s BULK_MODEL_PATH
                         Path of the trained predictor in the bulk level
   --sc_model_path SC_MODEL_PATH, -p SC_MODEL_PATH
                         Path (prefix) of the trained predictor in the single cell level
-  --pretrain PRETRAIN   Path of the pre-trained encoder in the single-cell level
+  --sc_encoder_path SC_ENCODER_PATH
+                        Path of the pre-trained encoder in the single-cell level
+  --checkpoint CHECKPOINT
+                        Load weight from checkpoint files, can be True,False, or a file path. Checkpoint files can be paraName1_para1_paraName2_para2... Default: True
   --lr LR               Learning rate of model training. Default: 1e-2
   --epochs EPOCHS       Number of epoches training. Default: 500
   --batch_size BATCH_SIZE
@@ -325,7 +383,7 @@ optional arguments:
   --dropout DROPOUT     Dropout of neural network. Default: 0.3
   --logging_file LOGGING_FILE, -l LOGGING_FILE
                         Path of training log
-  --sampling SAMPLING   Samping method of training data for the bulk model traning. Can be upsampling, downsampling, or SMOTE. default: None
+  --sampling SAMPLING   Samping method of training data for the bulk model traning. Can be no, upsampling, downsampling, or SMOTE. default: no
   --fix_source FIX_SOURCE
                         Fix the bulk level model. Default: 0
   --bulk BULK           Selection of the bulk database.integrate:both dataset. old: GDSC. new: CCLE. Default: integrate
