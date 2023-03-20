@@ -29,7 +29,7 @@ git clone https://github.com/OSU-BMBL/scDEAL.git
 cd scDEAL
 ```
 
-It’s recommended to install the scDEAL under the provided conda environment through the conda pack [Click here to download scdeal.tar.gz](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBFrNlq3pvqwIBs8psJOHQTA?e=ujZRVY). It’s recommended to install in your root conda environment - the conda pack command will then be available in all sub-environments as well.
+It’s recommended to install the scDEAL under the provided conda environment through the conda pack [Click here to download scdeal.tar.gz](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBV8wtnved8LDP7pwqf7T5jQ?e=UHqeya). It’s recommended to install in your root conda environment - the conda pack command will then be available in all sub-environments as well.
 ### Install with conda:
 conda-pack is available from Anaconda as well as from conda-forge:
 ```
@@ -45,13 +45,13 @@ pip install conda-pack
 ## Load the scDEALenv environment
 conda-pack is primarily a command line tool. Full CLI docs can be found here.
 One common use case is packing an environment on one machine to distribute to other machines that may not have conda/python installed.
-Import and activate the environment of your target machine:
+Place the downloaded scdeal.tar.gz into your scDEAL folder. Import and activate the environment of your target machine:
 ```
 # Unpack environment into directory `scDEALenv`
-$ mkdir -p scDEALenv
-$ tar -xzf scDEAL.tar.gz -C scDEALenv
+mkdir -p scDEALenv
+tar -xzf scDEAL.tar.gz -C scDEALenv
 # Activate the environment. This adds `scDEALenv/bin` to your path
-$ source scDEALenv/bin/activate
+source scDEALenv/bin/activate
 ```
 
 ## Data Preparation
@@ -69,7 +69,17 @@ The file "scDEAL.zip" includes all the datasets we have tested. Please extract t
 |     Data 5    |     Aissa, et al.      |     Erlotinib    |     GSE149383     |     1496     |     Homo sapiens      |     Lung cancer                        |
 |     Data 6    |     Bell, et al.       |     I-BET-762    |     GSE110894     |     1419     |     Mus   musculus    |     Acute   myeloid leukemia           |
 
-"scDEAL.zip" also includes model checkpoints in the "save" directory. Try to extract the scDEAL.zip and put all resources into the home directory of scDEAL as follows:
+"scDEAL.zip" also includes model checkpoints in the "save" directory. Try to extract the scDEAL.zip.
+```
+# Unpack scDEAL.zip into directory `scDEAL`
+unzip scDEAL.zip
+# View folder
+ls -a
+#ls results:
+#bulkmodel.py  DaNN  LICENSE    README.md    save       scDEALenv   trainers.py    utils.py
+#casestudy     data  models.py  sampling.py  scanpypip  scmodel.py  trajectory.py
+```
+All resources in the home directory of scDEAL should look as follows:
 
 ```
 scDEAL
@@ -140,7 +150,7 @@ This step takes the expression profile of bulk RNA-Seq and the drug response ann
 For the transfer learning, we provide a built-in testing case of acute myeloid leukemia cells [Bell](https://doi.org/10.1038/s41467-019-10652-9) et al.](https://doi.org/10.1038/s41467-019-10652-9) accessed from Gene Expression Omnibus (GEO) accession [GSE110894](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE110894). The training time for the cases are:  
 
 ```
-python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --printgene "F" -mod "new" --checkpoint "save/sc_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl"
+python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --sampling "upsampling" --printgene "F" -mod "new" --checkpoint "save/sc_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl"
 ```
 This step trains the scDEAL model and predicts the sensitivity of I-BET-762 of the input scRNA-Seq data from GSE110984. Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,128" --bottleneck 512) in two steps. Other applicable drugs and their resistance can be viewed from the table provided in the file: 
 [ALL_label_binary_wf.csv](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m)
@@ -152,7 +162,7 @@ Run bulkmode.py and scmodel.py with user-defined parameters:
 ```
 source scDEALenv/bin/activate
 python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "False"
-python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --printgene "F" -mod "new" --checkpoint "False"
+python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --sampling "upsampling" --printgene "F" -mod "new" --checkpoint "False"
 ```
 This step trains the scDEAL model and predicts the sensitivity of I-BET-762 of the input scRNA-Seq data from GSE110984. Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,256" --bottleneck 256) in two steps. Other applicable drugs and their resistance can be viewed from the table provided in the file: 
 
