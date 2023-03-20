@@ -30,6 +30,10 @@ cd scDEAL
 ```
 
 It’s recommended to install the scDEAL under **Linux** and install the provided conda environment through the conda pack [Click here to download scdeal.tar.gz](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBV8wtnved8LDP7pwqf7T5jQ?e=UHqeya). It’s recommended to install in your root conda environment - the conda pack command will then be available in all sub-environments as well.
+
+[Click here to download scdeal.tar.gz](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBV8wtnved8LDP7pwqf7T5jQ?e=UHqeya) 
+
+
 ### Install with conda:
 conda-pack is available from Anaconda as well as from conda-forge:
 ```
