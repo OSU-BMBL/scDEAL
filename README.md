@@ -137,34 +137,43 @@ An example can be:
 integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl
 
 Usage:
-For resuming training, you can use the --checkpoint option of bulkmodel.py and scmodel.py.
-For example, run bulkmode.py with user-defined parameters:
+For resuming training, you can use the --checkpoint option of scmodel.py and bulkmodel.py.
+For example, run scmodel.py with checkpoints to get the single-cell level prediction results:
+
+```
+source scDEALenv/bin/activate
+python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --sampling "upsampling" --printgene "F" -mod "new" --checkpoint "save/sc_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl"
+```
+This step is a built-in testing case of acute myeloid leukemia cells [Bell](https://doi.org/10.1038/s41467-019-10652-9) et al.](https://doi.org/10.1038/s41467-019-10652-9) accessed from Gene Expression Omnibus (GEO) accession [GSE110894](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE110894). This step calls the scDEAL model and predicts the sensitivity of I.BET.762 of the input scRNA-Seq data from GSE110984.  The file name of the single cell model is "save/sc_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl". The we also provide the checkpoint from the bulk level and run bulkmodel.py with checkpoints and then the scmodel.py to get the single-cell level prediction results
 
 ```
 source scDEALenv/bin/activate
 python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling"
-```
 
-This step takes the expression profile of bulk RNA-Seq and the drug response annotations as input. It will train a drug sensitivity predictor for the drug "I.BET.762." The output model will be stored in the directory "save/models." The prefix of the model's file name will be "bulk_predictor_ae_" and its full name will be dependent on the parameters that users insert. In this case. The file name of the bulk model will be "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling". For all available drug names, please refer to the columns names of files: ALL_label_binary_wf.csv. 
-
-For the transfer learning, we provide a built-in testing case of acute myeloid leukemia cells [Bell](https://doi.org/10.1038/s41467-019-10652-9) et al.](https://doi.org/10.1038/s41467-019-10652-9) accessed from Gene Expression Omnibus (GEO) accession [GSE110894](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE110894). The training time for the cases are:  
-
-```
 python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --sampling "upsampling" --printgene "F" -mod "new" --checkpoint "save/sc_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl"
 ```
-This step trains the scDEAL model and predicts the sensitivity of I-BET-762 of the input scRNA-Seq data from GSE110984. Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,128" --bottleneck 512) in two steps. Other applicable drugs and their resistance can be viewed from the table provided in the file: 
-[ALL_label_binary_wf.csv](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m)
-The file name of the single cell model will be "save/sc_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl".
+Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,128" --bottleneck 512) in two steps.
+This step takes the expression profile of bulk RNA-Seq and the drug response annotations as input. It loads a drug sensitivity predictor for the drug "I.BET.762." The output model is stored in the directory "save/models." In this case. The file name of the bulk model is "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling". 
 
 ### Train from scratch
-Run bulkmode.py and scmodel.py with user-defined parameters:
+We can also train bulkmode.py and scmodel.py from scratch with user-defined parameters by setting --checkpoint "False":
+Suggested parameters are as follows
+
+|           data |      drug | bottleneck | encoder dimensions | predictor dimensions | encoder model | dropout | learning rate |   sampling |
+|---------------:|----------:|-----------:|-------------------:|---------------------:|--------------:|--------:|--------------:|-----------:|
+|      GSE110894 | I.BET.762 |        512 |            256,128 |               128,64 |           DAE |     0.1 |           0.5 | upsampling |
+|      GSE112274 | GEFITINIB |        256 |            512,256 |              256,128 |           DAE |     0.1 |           0.5 |         no |
+| GSE117872HN120 | CISPLATIN |        512 |            256,128 |               128,64 |           DAE |     0.3 |          0.01 |      SMOTE |
+| GSE117872HN137 | CISPLATIN |         32 |            512,256 |              256,128 |           DAE |     0.3 |          0.01 | upsampling |
+|      GSE140440 | DOCETAXEL |        512 |            256,128 |              256,128 |           DAE |     0.1 |          0.01 | upsampling |
+|      GSE149383 | ERLOTINIB |         64 |            512,256 |              256,128 |           DAE |     0.3 |          0.01 | upsampling |
 
 ```
 source scDEALenv/bin/activate
 python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "False"
 python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --sampling "upsampling" --printgene "F" -mod "new" --checkpoint "False"
 ```
-This step trains the scDEAL model and predicts the sensitivity of I-BET-762 of the input scRNA-Seq data from GSE110984. Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,256" --bottleneck 256) in two steps. Other applicable drugs and their resistance can be viewed from the table provided in the file: 
+Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,256" --bottleneck 256) in two steps.
 
 ### Expected run time for the demo
 The training time of the test case including bulk-level and single-cell-level training on the testing computer was 4 minutes.
