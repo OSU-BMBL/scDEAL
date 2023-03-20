@@ -152,12 +152,11 @@ python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,1
 
 python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --sampling "upsampling" --printgene "F" -mod "new" --checkpoint "save/sc_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling_DaNN.pkl"
 ```
-Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,128" --bottleneck 512) in two steps.
-This step takes the expression profile of bulk RNA-Seq and the drug response annotations as input. It loads a drug sensitivity predictor for the drug "I.BET.762." The output model is stored in the directory "save/models." In this case. The file name of the bulk model is "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling". 
+Remember that the dimension of the encoder and predictor should be identical (--encoder_h_dims(bulk_h_dims) "256,128", --predictor_h_dims "128,64", --bottleneck 256) in two steps. This step takes the expression profile of bulk RNA-Seq and the drug response annotations as input. It loads a drug sensitivity predictor for the drug "I.BET.762." The output model is stored in the directory "save/models." In this case. The file name of the bulk model is "save/bulk_pre/integrate_data_GSE110894_drug_I.BET.762_bottle_512_edim_256,128_pdim_128,64_model_DAE_dropout_0.1_gene_F_lr_0.5_mod_new_sam_upsampling". 
 
 ### Train from scratch
 We can also train bulkmode.py and scmodel.py from scratch with user-defined parameters by setting --checkpoint "False":
-Suggested parameters are as follows
+Suggested parameters for our selected datasets are as follows:
 
 |           data |      drug | bottleneck | encoder dimensions | predictor dimensions | encoder model | dropout | learning rate |   sampling |
 |---------------:|----------:|-----------:|-------------------:|---------------------:|--------------:|--------:|--------------:|-----------:|
@@ -173,7 +172,7 @@ source scDEALenv/bin/activate
 python bulkmodel.py --drug "I.BET.762" --dimreduce "DAE" --encoder_h_dims "256,128" --predictor_h_dims "128,64" --bottleneck 512 --data_name "GSE110894" --sampling "upsampling" --dropout 0.1 --lr 0.5 --printgene "F" -mod "new" --checkpoint "False"
 python scmodel.py --sc_data "GSE110894" --dimreduce "DAE" --drug "I.BET.762" --bulk_h_dims "256,128" --bottleneck 512 --predictor_h_dims "128,64" --dropout 0.1 --printgene "F" -mod "new" --lr 0.5 --sampling "upsampling" --printgene "F" -mod "new" --checkpoint "False"
 ```
-Remember that the dimension of the encoder and predictor should be identical (--bulk_h_dims "256,256" --bottleneck 256) in two steps.
+Remember that the dimension of the encoder and predictor should be identical (--encoder_h_dims(bulk_h_dims) "256,128", --predictor_h_dims "128,64", --bottleneck 256) in two steps.
 
 ### Expected run time for the demo
 The training time of the test case including bulk-level and single-cell-level training on the testing computer was 4 minutes.
