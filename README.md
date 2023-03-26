@@ -60,9 +60,9 @@ source scDEALenv/bin/activate
 
 ## Data Preparation
 ### Data download
-After setting up the home directory, you need to download other resources required for the run. Please create and download the zip format dataset from the [scDEAL.zip](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m) link inside:
+After setting up the home directory, you need to download other resources required for the run. Please create and download the zip format dataset from the [scDEAL.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/ER2m5OXpYrdPngoAf06pqDoBsiuItm9yvAqg_CjHhNvKSA?e=ckLJ91) link inside:
 
-[Click here to download scDEAL.zip](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m) 
+[Click here to download scDEAL.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/ER2m5OXpYrdPngoAf06pqDoBsiuItm9yvAqg_CjHhNvKSA?e=ckLJ91) 
 
 The file "scDEAL.zip" includes all the datasets we have tested. Please extract the zip file and place the sub-directory "data" in the root directory of the "scDEAL" folder. 
 |               |     Author             |     Drug         |     GEO access    |     Cells    |     Species           |     Cancer type                        |
@@ -214,8 +214,8 @@ python scmodel.py --sc_data [*Your own data path*] ...
 ```
 
 Formats for your drug resistance table and your bulk level expression should be identical to the files in the demo:
-- [ALL_label_binary_wf.csv](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m)
-- [ALL_expression.csv](https://portland-my.sharepoint.com/:u:/r/personal/junyichen8-c_my_cityu_edu_hk/Documents/scDEAL/0319/scDEAL.zip?csf=1&web=1&e=Bbul9m)
+- [ALL_label_binary_wf.csv](https://portland-my.sharepoint.com/personal/junyichen8-c_my_cityu_edu_hk/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fjunyichen8%2Dc%5Fmy%5Fcityu%5Fedu%5Fhk%2FDocuments%2FscDEAL%2F0319%2FscDEAL%2Ezip&parent=%2Fpersonal%2Fjunyichen8%2Dc%5Fmy%5Fcityu%5Fedu%5Fhk%2FDocuments%2FscDEAL%2F0319&ga=1)
+- [ALL_expression.csv](https://portland-my.sharepoint.com/personal/junyichen8-c_my_cityu_edu_hk/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fjunyichen8%2Dc%5Fmy%5Fcityu%5Fedu%5Fhk%2FDocuments%2FscDEAL%2F0319%2FscDEAL%2Ezip&parent=%2Fpersonal%2Fjunyichen8%2Dc%5Fmy%5Fcityu%5Fedu%5Fhk%2FDocuments%2FscDEAL%2F0319&ga=1)
 
 For more detailed parameter settings of the two scripts, please refer to the documentation section.
 
