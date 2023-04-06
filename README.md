@@ -2,10 +2,6 @@
 Deep Transfer Learning of Drug Sensitivity by Integrating Bulk and Single-cell RNA-seq data
 
 ## News 2023/03/19
-Multiple package versions changed and therefore the results shown in the article cannot be fully replicated, but we provide the full result information (embedding, sensitive score and so on) for all of our data, stored in the adata format. These results can be downloaded from [here](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EYru-LaQC1tHlFZSnf1RA_cBjXwIafy-iDsajEWjh8xcjA?e=2sE61e).   
-Now, we are re-tuning parameters based on the current version environment and we will show the results on GitHub. 
-
-This update provides all the shell files to help you repeat all the results.
 1. Added the function of loading checkpoint weights to the model.
 2. Added the conda environment applied to produce the result.
 3. Reorganized and uploaded the resources need for the code.
