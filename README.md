@@ -27,8 +27,10 @@ cd scDEAL
 
 It’s recommended to install the scDEAL under **Linux** and install the provided conda environment through the conda pack [Click here to download scdeal.tar.gz](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBV8wtnved8LDP7pwqf7T5jQ?e=UHqeya). It’s recommended to install in your root conda environment - the conda pack command will then be available in all sub-environments as well.
 
-[Click here to download scdeal.tar.gz](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBV8wtnved8LDP7pwqf7T5jQ?e=UHqeya) 
+[Click here to download scdeal.tar.gz from onedrive](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/EaOYJmIATDdFoI5wqcDJiVsBV8wtnved8LDP7pwqf7T5jQ?e=UHqeya) 
 
+
+[Click here to download scdeal.tar.gz from google drive](https://drive.google.com/file/d/16tmJ0-4TUoKMn1RpXgKEZ9F8dvh8kh5Z/view?usp=sharing) 
 
 ### Install with conda:
 conda-pack is available from Anaconda as well as from conda-forge:
@@ -58,7 +60,9 @@ source scDEALenv/bin/activate
 ### Data download
 After setting up the home directory, you need to download other resources required for the run. Please create and download the zip format dataset from the [scDEAL.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/ER2m5OXpYrdPngoAf06pqDoBsiuItm9yvAqg_CjHhNvKSA?e=ckLJ91) link inside:
 
-[Click here to download scDEAL.zip](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/ER2m5OXpYrdPngoAf06pqDoBsiuItm9yvAqg_CjHhNvKSA?e=ckLJ91) 
+[Click here to download scDEAL.zip from onedrive](https://portland-my.sharepoint.com/:u:/g/personal/junyichen8-c_my_cityu_edu_hk/ER2m5OXpYrdPngoAf06pqDoBsiuItm9yvAqg_CjHhNvKSA?e=ckLJ91) 
+
+[Click here to download scDEAL.zip from google drive](https://drive.google.com/file/d/14mSE1GMi8N8BEt_3MQJSfQvMqg5PH5wI/view?usp=sharing) 
 
 The file "scDEAL.zip" includes all the datasets we have tested. Please extract the zip file and place the sub-directory "data" in the root directory of the "scDEAL" folder. 
 |               |     Author             |     Drug         |     GEO access    |     Cells    |     Species           |     Cancer type                        |
